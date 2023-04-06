@@ -33,6 +33,12 @@ contract AllowanceModuleTest is PRBTest, StdCheats {
 
     function testIdentifyMolochMember() external {
         vm.mockCall(molochDAO, abi.encodeWithSelector(IBaal.sharesToken.selector), abi.encode(sharesToken));
+
+        vm.mockCall(address(sharesToken), abi.encodeWithSelector(IBaalToken.balanceOf.selector), abi.encode(0));
+
+        assertEq(IBaalToken(address(sharesToken)).balanceOf(alice), 0);
+        assertFalse(module.isMolochMember(molochDAO, alice));
+
         vm.mockCall(address(sharesToken), abi.encodeWithSelector(IBaalToken.balanceOf.selector), abi.encode(10));
 
         assertEq(IBaalToken(address(sharesToken)).balanceOf(alice), 10);
@@ -44,6 +50,19 @@ contract AllowanceModuleTest is PRBTest, StdCheats {
         uint96 allowanceAmount = 10_000_000;
         uint16 resetTime = 3600;
 
+        (
+            uint96 amount,
+            uint16 resetTimeMin, // Maximum reset time span is 65k minutes
+            ,
+            uint16 nonce
+        ) = module.allowances(testSafe, address(mockERC20));
+
+        assertEq(amount, 0);
+        assertEq(resetTimeMin, 0);
+        assertEq(nonce, 0);
+
+        assertEq(module.getTokens(testSafe).length, 0);
+
         vm.expectEmit(true, true, true, true);
         emit SetAllowance(testSafe, address(mockERC20), allowanceAmount, resetTime);
 
@@ -51,10 +70,10 @@ contract AllowanceModuleTest is PRBTest, StdCheats {
 
         //TODO test lastResetMin
         (
-            uint96 amount,
-            uint16 resetTimeMin, // Maximum reset time span is 65k minutes
+            amount,
+            resetTimeMin, // Maximum reset time span is 65k minutes
             ,
-            uint16 nonce
+            nonce
         ) = module.allowances(testSafe, address(mockERC20));
 
         assertEq(amount, allowanceAmount);
@@ -75,7 +94,6 @@ contract AllowanceModuleTest is PRBTest, StdCheats {
 
         SigUtils.AllowanceTransfer memory allowanceTransfer =
             SigUtils.AllowanceTransfer(testSafe, address(mockERC20), transferAmount, address(mockERC20), 0, 1);
-
 
         // TOFIX: execution with signed message
         bytes32 digest = sigUtils.getTypedDataHash(allowanceTransfer);
