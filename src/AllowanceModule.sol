@@ -309,7 +309,7 @@ contract AllowanceModule is SignatureDecoder {
         view
     {
         address signer = recoverSignature(signature, transferHashData);
-        require(expectedMember == signer, "expectedDelegate == signer");
+        require(expectedMember == signer, "expectedMember == signer");
     }
 
     // We use the same format as used for the Safe contract, except that we only support exactly 1 signature and no
