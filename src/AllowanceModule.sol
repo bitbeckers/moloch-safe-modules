@@ -23,7 +23,7 @@ interface GnosisSafe {
 }
 
 contract AllowanceModule is SignatureDecoder {
-    string public constant NAME = "Moloch Allowance Module";
+    string public constant NAME = "MolochV3 Allowance Module";
     string public constant VERSION = "0.1.0";
 
     bytes32 public constant DOMAIN_SEPARATOR_TYPEHASH =
@@ -39,8 +39,11 @@ contract AllowanceModule is SignatureDecoder {
     // nonce)"
     // );
 
-    // Safe -> Delegate -> Allowance
+    // Safe -> Token -> Allowance
     mapping(address => mapping(address => Allowance)) public allowances;
+
+    // Safe -> Member -> Token => Spending
+    mapping(address => mapping(address => mapping(address => Spending))) public spendings;
 
     // Safe -> Tokens
     mapping(address => address[]) public tokens;
@@ -48,33 +51,40 @@ contract AllowanceModule is SignatureDecoder {
     // The allowance info is optimized to fit into one word of storage.
     struct Allowance {
         uint96 amount;
-        uint96 spent;
         uint16 resetTimeMin; // Maximum reset time span is 65k minutes
         uint32 lastResetMin;
         uint16 nonce;
     }
 
+    // The spending info is optimized to fit into one word of storage.
+    struct Spending {
+        uint96 spent;
+        uint32 lastUpdateMin;
+        uint16 nonce;
+    }
+
     event ExecuteAllowanceTransfer(
-        address indexed safe, address delegate, address token, address to, uint96 value, uint16 nonce
+        address indexed safe, address member, address token, address to, uint96 value, uint16 nonce
     );
     event PayAllowanceTransfer(
-        address indexed safe, address delegate, address paymentToken, address paymentReceiver, uint96 payment
+        address indexed safe, address member, address paymentToken, address paymentReceiver, uint96 payment
     );
     event SetAllowance(address indexed safe, address token, uint96 allowanceAmount, uint16 resetTime);
     event ResetAllowance(address indexed safe, address token);
     event DeleteAllowance(address indexed safe, address token);
 
+    event ResetSpending(address member, address indexed safe, address token);
+
     /// @dev View function to check if a delegate is part of a Moloch V3 DAO by checking if they hold the token.
-    /// @param member Member address.
     /// @param molochDAO Moloch V3 DAO address.
-    /// @param token Token address.
+    /// @param user Token address.
     /// @return True if delegate is part of the DAO.
-    function isMolochMember(address member, address molochDAO, address token) public view returns (bool) {
-        require(IBaal(molochDAO).sharesToken() == token);
-        return IBaalToken(token).balanceOf(member) > 0;
+    function isMolochMember(address molochDAO, address user) public view returns (bool) {
+        address sharesToken = IBaal(molochDAO).sharesToken();
+        return IBaalToken(sharesToken).balanceOf(user) > 0;
     }
 
-    /// @dev Allows to update the allowance for a specified token for all Moloch DAO members. This can only be done via
+    /// @dev Allows to update the allowance for a specified token for all members. This can only be done via
     /// a Safe transaction.
     /// @param token Token contract address.
     /// @param allowanceAmount allowance in smallest token unit.
@@ -109,7 +119,6 @@ contract AllowanceModule is SignatureDecoder {
         uint32 currentMin = uint32(block.timestamp / 60);
         // Check if we should reset the time. We do this on load to minimize storage read/ writes
         if (allowance.resetTimeMin > 0 && allowance.lastResetMin <= currentMin - allowance.resetTimeMin) {
-            allowance.spent = 0;
             // Resets happen in regular intervals and `lastResetMin` should be aligned to that
             allowance.lastResetMin = currentMin - ((currentMin - allowance.lastResetMin) % allowance.resetTimeMin);
         }
@@ -120,15 +129,30 @@ contract AllowanceModule is SignatureDecoder {
         allowances[safe][token] = allowance;
     }
 
-    /// @dev Allows to reset the allowance for a specific delegate and token.
-    /// @param member DAO Member whose allowance should be updated.
+    function getSpending(address safe, address member, address token) private view returns (Spending memory spending) {
+        spending = spendings[safe][member][token];
+        // solium-disable-next-line security/no-block-members
+        uint32 currentMin = uint32(block.timestamp / 60);
+        // Check if we should reset the time. We do this on load to minimize storage read/ writes
+        if (spending.lastUpdateMin <= currentMin - 60) {
+            spending.lastUpdateMin = currentMin - ((currentMin - spending.lastUpdateMin) % 60);
+        }
+        return spending;
+    }
+
+    function updateSpending(address safe, address member, address token, Spending memory spending) private {
+        spendings[safe][member][token] = spending;
+    }
+
+    /// @dev Allows to reset the spending for a specific member and token.
+    /// @param member DAO Member whose spending should be updated.
     /// @param token Token contract address.
-    function resetAllowance(address member, address token) public {
-        require(isMolochMember(member, msg.sender, token), "isMolochMember");
-        Allowance memory allowance = getAllowance(msg.sender, token);
-        allowance.spent = 0;
-        updateAllowance(msg.sender, token, allowance);
-        emit ResetAllowance(msg.sender, token);
+    function resetSpending(address dao, address member, address token) public {
+        require(isMolochMember(dao, member), "!isMolochMember");
+        Spending memory spending = getSpending(msg.sender, member, token);
+        spending.spent = 0;
+        updateSpending(msg.sender, member, token, spending);
+        emit ResetSpending(member, msg.sender, token);
     }
 
     /// @dev Allows to remove the allowance for the tokens of a MolochDAO. This will set all values except the
@@ -137,7 +161,6 @@ contract AllowanceModule is SignatureDecoder {
     function deleteAllowance(address token) public {
         Allowance memory allowance = getAllowance(msg.sender, token);
         allowance.amount = 0;
-        allowance.spent = 0;
         allowance.resetTimeMin = 0;
         allowance.lastResetMin = 0;
         updateAllowance(msg.sender, token, allowance);
@@ -145,70 +168,88 @@ contract AllowanceModule is SignatureDecoder {
     }
 
     /// @dev Allows to use the allowance to perform a transfer.
+    /// @param member Member address that executes the spend.
     /// @param safe The Safe whose funds should be used.
     /// @param token Token contract address.
     /// @param to Address that should receive the tokens.
     /// @param amount Amount that should be transferred.
     /// @param paymentToken Token that should be used to pay for the execution of the transfer.
     /// @param payment Amount to should be paid for executing the transfer.
-    /// @param molochDAO Delegate whose allowance should be updated.
     /// @param signature Signature generated by the delegate to authorize the transfer.
     function executeAllowanceTransfer(
+        address member,
         GnosisSafe safe,
         address token,
         address payable to,
         uint96 amount,
         address paymentToken,
         uint96 payment,
-        address molochDAO,
         bytes memory signature
     )
         public
     {
         // Get current state
         Allowance memory allowance = getAllowance(address(safe), token);
+        Spending memory spending = getSpending(address(safe), member, token);
         bytes memory transferHashData =
             generateTransferHashData(address(safe), token, to, amount, paymentToken, payment, allowance.nonce);
 
         // Update state
         allowance.nonce = allowance.nonce + 1;
-        uint96 newSpent = allowance.spent + amount;
+        uint96 newSpent = spending.spent + amount;
         // Check new spent amount and overflow
         require(
-            newSpent > allowance.spent && newSpent <= allowance.amount,
+            newSpent > spending.spent && newSpent <= allowance.amount,
             "newSpent > allowance.spent && newSpent <= allowance.amount"
         );
-        allowance.spent = newSpent;
-        if (payment > 0) {
-            // Use updated allowance if token and paymentToken are the same
-            Allowance memory paymentAllowance =
-                paymentToken == token ? allowance : getAllowance(address(safe), paymentToken);
-            newSpent = paymentAllowance.spent + payment;
-            // Check new spent amount and overflow
-            require(
-                newSpent > paymentAllowance.spent && newSpent <= paymentAllowance.amount,
-                "newSpent > paymentAllowance.spent && newSpent <= paymentAllowance.amount"
-            );
-            paymentAllowance.spent = newSpent;
-            // Update payment allowance if different from allowance
-            if (paymentToken != token) updateAllowance(address(safe), paymentToken, paymentAllowance);
-        }
-        updateAllowance(address(safe), token, allowance);
+        spending.spent = newSpent;
 
-        // Perform external interactions
-        // Check signature
-        checkSignature(molochDAO, signature, transferHashData);
+        {
+            if (payment > 0) {
+                // Use updated allowance if token and paymentToken are the same
+                Allowance memory paymentAllowance =
+                    paymentToken == token ? allowance : getAllowance(address(safe), paymentToken);
+                Spending memory paymentSpending =
+                    paymentToken == token ? spending : getSpending(address(safe), member, paymentToken);
 
-        if (payment > 0) {
-            // Transfer payment
-            // solium-disable-next-line security/no-tx-origin
-            transfer(safe, paymentToken, payable(tx.origin), payment);
-            // solium-disable-next-line security/no-tx-origin
-            emit PayAllowanceTransfer(address(safe), molochDAO, paymentToken, tx.origin, payment);
+                newSpent = paymentSpending.spent + payment;
+                // Check new spent amount and overflow
+                require(
+                    newSpent > paymentSpending.spent && newSpent <= paymentAllowance.amount,
+                    "newSpent > paymentAllowance.spent && newSpent <= paymentAllowance.amount"
+                );
+                paymentSpending.spent = newSpent;
+                // Update payment allowance if different from allowance
+                if (paymentToken != token) {
+                    updateAllowance(address(safe), paymentToken, paymentAllowance);
+                    updateSpending(address(safe), member, paymentToken, paymentSpending);
+                }
+            }
         }
-        // Transfer token
-        transfer(safe, token, to, amount);
-        emit ExecuteAllowanceTransfer(address(safe), molochDAO, token, to, amount, allowance.nonce - 1);
+
+        {
+            updateAllowance(address(safe), token, allowance);
+            updateSpending(address(safe), member, token, spending);
+
+            // Perform external interactions
+            // Check signature
+            checkSignature(member, signature, transferHashData);
+        }
+
+        {
+            // TODO add members to events???
+            if (payment > 0) {
+                // Transfer payment
+                // solium-disable-next-line security/no-tx-origin
+                transfer(safe, paymentToken, payable(tx.origin), payment);
+                // solium-disable-next-line security/no-tx-origin
+                emit PayAllowanceTransfer(address(safe), member, paymentToken, tx.origin, payment);
+            }
+
+            // Transfer token
+            transfer(safe, token, to, amount);
+            emit ExecuteAllowanceTransfer(address(safe), member, token, to, amount, allowance.nonce - 1);
+        }
     }
 
     /// @dev Returns the chain id used by this contract.
@@ -260,7 +301,7 @@ contract AllowanceModule is SignatureDecoder {
     }
 
     function checkSignature(
-        address expectedDelegate,
+        address expectedMember,
         bytes memory signature,
         bytes memory transferHashData
     )
@@ -268,7 +309,7 @@ contract AllowanceModule is SignatureDecoder {
         view
     {
         address signer = recoverSignature(signature, transferHashData);
-        require(expectedDelegate == signer, "expectedDelegate == signer");
+        require(expectedMember == signer, "expectedDelegate == signer");
     }
 
     // We use the same format as used for the Safe contract, except that we only support exactly 1 signature and no
@@ -330,11 +371,10 @@ contract AllowanceModule is SignatureDecoder {
         return tokens[safe];
     }
 
-    function getTokenAllowance(address safe, address token) public view returns (uint256[5] memory) {
+    function getTokenAllowance(address safe, address token) public view returns (uint256[4] memory) {
         Allowance memory allowance = getAllowance(safe, token);
         return [
             uint256(allowance.amount),
-            uint256(allowance.spent),
             uint256(allowance.resetTimeMin),
             uint256(allowance.lastResetMin),
             uint256(allowance.nonce)

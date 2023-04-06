@@ -26,6 +26,6 @@ contract AllowanceModuleTest is PRBTest, StdCheats {
         vm.mockCall(sharesToken, abi.encodeWithSelector(IBaalToken.balanceOf.selector), abi.encode(10));
 
         assertEq(IBaalToken(sharesToken).balanceOf(testUser), 10);
-        assertTrue(module.isMolochMember(testUser, molochDAO, sharesToken));
+        assertTrue(module.isMolochMember(molochDAO, testUser));
     }
 }
