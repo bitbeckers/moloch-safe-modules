@@ -7,9 +7,8 @@ import { CookieJar } from "./CookieJar.sol";
 
 contract ERC20CookieJar is CookieJar {
 
-    address public erc20Addr;
     address public safeTarget;
-    uint256 public threshold;
+    mapping(address allowed => bool exists) public allowList;
 
     function setUp(bytes memory _initializationParams, 
         uint256 _cookieAmount, 
@@ -18,25 +17,26 @@ contract ERC20CookieJar is CookieJar {
 
         (
             address _safeTarget, 
-            address _erc20addr, 
-            uint256 _threshold
+            address[] memory _allowList
         ) = abi.decode(
                 _initializationParams,
-                (address, address, uint256)
+                (address, address[])
             );
 
         erc20Addr = _erc20addr;
         safeTarget = _safeTarget;
-        threshold = _threshold;
-        posterTag = "cookieJar.erc20";
+        posterTag = "cookieJar.custom";
 
+        for(uint256 i = 0; i < _allowList.length; i++){
+            allowList[_allowList[i]] = true;
+        }
 
         avatar = safeTarget;
         target = safeTarget; 
     }
 
     function isAllowList() internal view override returns (bool) {
-        return IERC20(erc20Addr).balanceOf(msg.sender) >= threshold;
+        return allowList[msg.sender];
     }
 
 }

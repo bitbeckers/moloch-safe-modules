@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.19;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 import { CookieJar } from "./CookieJar.sol";
 
-contract ERC20CookieJar is CookieJar {
+contract ERC721CookieJar is CookieJar {
 
-    address public erc20Addr;
+    address public erc721Addr;
     address public safeTarget;
-    uint256 public threshold;
 
     function setUp(bytes memory _initializationParams, 
         uint256 _cookieAmount, 
@@ -18,17 +17,15 @@ contract ERC20CookieJar is CookieJar {
 
         (
             address _safeTarget, 
-            address _erc20addr, 
-            uint256 _threshold
+            address _erc721addr
         ) = abi.decode(
                 _initializationParams,
-                (address, address, uint256)
+                (address, address)
             );
 
-        erc20Addr = _erc20addr;
+        erc721Addr = _erc721addr;
         safeTarget = _safeTarget;
-        threshold = _threshold;
-        posterTag = "cookieJar.erc20";
+        posterTag = "cookieJar.erc721";
 
 
         avatar = safeTarget;
@@ -36,7 +33,7 @@ contract ERC20CookieJar is CookieJar {
     }
 
     function isAllowList() internal view override returns (bool) {
-        return IERC20(erc20Addr).balanceOf(msg.sender) >= threshold;
+        return IERC721(erc721Addr).balanceOf(msg.sender) > 0;
     }
 
 }

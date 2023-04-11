@@ -8,31 +8,47 @@ import { CookieJar } from "./CookieJar.sol";
 contract BaalCookieJar is CookieJar {
 
     address public dao;
+    uint256 public threshold;
+    bool public useShares;
+    bool public useLoot;
 
-    function setUp(bytes memory _initializationParams) public override initializer {
-        super.setUp(_initializationParams);
+    function setUp(bytes memory _initializationParams, 
+        uint256 _cookieAmount, 
+        uint256 _periodLength,
+        address _cookieToken) public override initializer {
+        super.setUp(_initializationParams, _cookieAmount, _periodLength, _cookieToken);
 
         (
-            address _dao, 
-            uint256 _cookieAmount
+            address _safeTarget, 
+            address _dao,
+            uint256 _threshold,
+            bool _useShares,
+            bool _useLoot
         ) = abi.decode(
                 _initializationParams,
-                (address, uint256)
+                (address, address, uint256, bool, bool)
             );
 
-        require(_cookieAmount > PERC_POINTS, "amount too low");
-
         dao = _dao;
-        cookieAmount = _cookieAmount;
+        threshold = _threshold;
+        useShares = _useShares;
+        useLoot = _useLoot;
         posterTag = "daohaus.member.database";
 
-
-        avatar = IBaal(dao).target();
-        target = IBaal(dao).target(); 
+        // IBaal(dao).target();
+        avatar = _safeTarget;
+        target = _safeTarget; 
     }
 
     function isAllowList() internal view override returns (bool) {
-        return IBaalToken(IBaal(dao).sharesToken()).balanceOf(msg.sender) > 0;
+        if(useShares && useLoot){
+            return IBaalToken(IBaal(dao).sharesToken()).balanceOf(msg.sender) >= threshold ||
+                IBaalToken(IBaal(dao).lootToken()).balanceOf(msg.sender) >= threshold;
+        }
+        if(useLoot){
+            return IBaalToken(IBaal(dao).lootToken()).balanceOf(msg.sender) >= threshold;
+        }
+        return IBaalToken(IBaal(dao).sharesToken()).balanceOf(msg.sender) >= threshold;
     }
 
 }
