@@ -1,19 +1,13 @@
+// SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.19;
 
 import { CookieJar } from "./CookieJar.sol";
 
 contract OpenCookieJar is CookieJar {
-
     function setUp(bytes memory _initializationParams) public virtual override initializer {
         super.setUp(_initializationParams);
 
-        (
-            address _target, 
-            uint256 _cookieAmount
-        ) = abi.decode(
-                _initializationParams,
-                (address, uint256)
-            );
+        (address _target, uint256 _cookieAmount) = abi.decode(_initializationParams, (address, uint256));
         require(_cookieAmount > PERC_POINTS, "amount too low");
 
         target = _target;
@@ -21,11 +15,10 @@ contract OpenCookieJar is CookieJar {
         posterTag = "cookiejar";
 
         avatar = target;
-        target = target; 
+        target = target;
     }
 
-    function isAlloweList() internal view override returns (bool) {
+    function isAllowList() internal pure override returns (bool) {
         return true;
     }
-
 }

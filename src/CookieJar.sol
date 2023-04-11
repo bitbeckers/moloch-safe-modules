@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.19;
 
 import "@gnosis.pm/zodiac/contracts/core/Module.sol";
@@ -26,7 +27,7 @@ abstract contract CookieJar is Module {
     }
 
     function reachInJar( string calldata _reason) public {
-        require(isAlloweList(), "not a member");
+        require(isAllowList(), "not a member");
         giveCookie(cookieAmount);
         postReason(_reason);
     }
@@ -59,7 +60,7 @@ abstract contract CookieJar is Module {
         IPoster(posterAddr).post(_reason, posterTag);
     }
 
-    function isAlloweList() internal virtual returns (bool) {
+    function isAllowList() internal virtual returns (bool) {
         return true;
     }
 

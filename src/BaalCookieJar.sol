@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.19;
 
 import { IBaalToken } from "./interfaces/IBaalToken.sol";
@@ -30,7 +31,7 @@ contract BaalCookieJar is CookieJar {
         target = IBaal(dao).target(); 
     }
 
-    function isAlloweList() internal view override returns (bool) {
+    function isAllowList() internal view override returns (bool) {
         return IBaalToken(IBaal(dao).sharesToken()).balanceOf(msg.sender) > 0;
     }
 

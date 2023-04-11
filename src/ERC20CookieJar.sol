@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -36,7 +37,7 @@ contract ERC20CookieJar is CookieJar {
         target = safeTarget; 
     }
 
-    function isAlloweList() internal view override returns (bool) {
+    function isAllowList() internal view override returns (bool) {
         return IERC20(erc20Addr).balanceOf(msg.sender) > threshold;
     }
 
