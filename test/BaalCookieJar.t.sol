@@ -8,6 +8,7 @@ import { IBaal } from "src/interfaces/IBaal.sol";
 import { IBaalToken } from "src/interfaces/IBaalToken.sol";
 import { BaalCookieJar } from "src/BaalCookieJar.sol";
 import { ERC20 } from "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 
 contract BaalCookieJarHarnass is BaalCookieJar {
     function exposed_isAllowList() external view returns (bool) {
@@ -16,19 +17,19 @@ contract BaalCookieJarHarnass is BaalCookieJar {
 }
 
 contract BaalCookieJarTest is PRBTest, StdCheats {
-    address alice = vm.addr(1);
-    address bob = vm.addr(2);
-    address molochDAO = vm.addr(666);
-    address testSafe = vm.addr(1337);
+    address internal alice = makeAddr("alice");
+    address internal bob = makeAddr("bob");
+    address internal molochDAO = vm.addr(666);
+    address internal testSafe = vm.addr(1337);
 
-    BaalCookieJarHarnass cookieJar;
+    BaalCookieJarHarnass internal cookieJar;
 
-    ERC20 sharesToken = new ERC20("Share", "SHR");
-    ERC20 mockERC20;
+    ERC20 internal sharesToken = new ERC20("Share", "SHR");
+    ERC20Mintable internal cookieERC20 = new ERC20Mintable("Mock", "MCK");
 
-    uint256 cookieAmount = 2e6;
+    uint256 internal cookieAmount = 2e6;
 
-    string reason = "CookieJar: Testing";
+    string internal reason = "BaalCookieJar: Testing";
 
     event Setup(bytes initializationParams);
     event GiveCookie(uint256 amount, uint256 fee);
@@ -37,12 +38,19 @@ contract BaalCookieJarTest is PRBTest, StdCheats {
         vm.mockCall(molochDAO, abi.encodeWithSelector(IBaal.sharesToken.selector), abi.encode(sharesToken));
         vm.mockCall(molochDAO, abi.encodeWithSelector(IBaal.target.selector), abi.encode(sharesToken));
 
-        bytes memory initParams = abi.encode(molochDAO, cookieAmount);
+        // uint256 _periodLength,
+        // uint256 _cookieAmount,
+        // address _cookieToken,
+        // address _safeTarget,
+        // address _dao,
+        // uint256 _threshold,
+        // bool _useShares,
+        // bool _useLoot
+        bytes memory initParams =
+            abi.encode(3600, cookieAmount, address(cookieERC20), address(testSafe), molochDAO, 1, true, true);
 
         cookieJar = new BaalCookieJarHarnass();
         cookieJar.setUp(initParams);
-
-        mockERC20 = new ERC20("Mock", "MCK");
     }
 
     function testIdentifyMolochMember() external {

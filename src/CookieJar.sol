@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.19;
 
-import "@gnosis.pm/zodiac/contracts/core/Module.sol";
-import "@gnosis.pm/safe-contracts/contracts/common/Enum.sol";
+import { Module } from "@gnosis.pm/zodiac/contracts/core/Module.sol";
+import { Enum } from "@gnosis.pm/safe-contracts/contracts/common/Enum.sol";
 
 import { IPoster } from "./interfaces/IPoster.sol";
+import "forge-std/console.sol";
 
 abstract contract CookieJar is Module {
     uint256 public percPoints;
@@ -40,6 +41,7 @@ abstract contract CookieJar is Module {
     function reachInJar(string calldata _reason) public {
         require(isAllowList(), "not a member");
         require(isValidClaimPeriod(), "not a valid claim period");
+
         claims[msg.sender] = block.timestamp;
         giveCookie(cookieAmount);
         postReason(_reason);
@@ -48,19 +50,24 @@ abstract contract CookieJar is Module {
     function giveCookie(uint256 amount) private {
         uint256 fee = (amount / percPoints) * sustainabilityFee;
         // module exec
+
         if (cookieToken == address(0)) {
             require(exec(sustainabilityAddress, fee, bytes(""), Enum.Operation.Call), "call failure setup");
             require(exec(msg.sender, amount - fee, bytes(""), Enum.Operation.Call), "call failure setup");
         } else {
+            console.log("execERC20: sustainabilityAddress: %s", sustainabilityAddress);
+            console.log("execERC20: msg.sender: %s", msg.sender);
+
             require(
                 exec(
                     cookieToken,
                     0,
-                    abi.encodeWithSignature("transfer(address,uint256)", abi.encodePacked(msg.sender, fee)),
+                    abi.encodeWithSignature("transfer(address,uint256)", abi.encodePacked(sustainabilityAddress, fee)),
                     Enum.Operation.DelegateCall
                 ),
                 "call failure setup"
             );
+
             require(
                 exec(
                     cookieToken,
