@@ -10,7 +10,7 @@ import { OpenCookieJar } from "src/OpenCookieJar.sol";
 import { ERC20 } from "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 
 contract OpenCookieJarHarnass is OpenCookieJar {
-    function exposed_isAllowList() external view returns (bool) {
+    function exposed_isAllowList() external pure returns (bool) {
         return isAllowList();
     }
 }

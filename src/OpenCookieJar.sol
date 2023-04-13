@@ -4,15 +4,10 @@ pragma solidity 0.8.19;
 import { CookieJar } from "./CookieJar.sol";
 
 contract OpenCookieJar is CookieJar {
-    function setUp(bytes memory _initializationParams, 
-        uint256 _cookieAmount, 
-        uint256 _periodLength,
-        address _cookieToken) public virtual override initializer {
-        super.setUp(_initializationParams, _cookieAmount, _periodLength, _cookieToken);
+    function setUp(bytes memory _initializationParams) public virtual override initializer {
+        super.setUp(_initializationParams);
 
-        (address _safeTarget) = abi.decode(
-            _initializationParams, 
-            (address));
+        (,,, address _safeTarget) = abi.decode(_initializationParams, (uint256, uint256, address, address));
 
         target = _safeTarget;
         posterTag = "cookiejar.open";
