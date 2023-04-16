@@ -9,6 +9,8 @@ import { IBaalToken } from "src/interfaces/IBaalToken.sol";
 import { ERC20CookieJar } from "src/ERC20CookieJar.sol";
 import { ERC20 } from "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
+import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
+import { IPoster } from "src/interfaces/IPoster.sol";
 
 contract ERC20CookieJarHarnass is ERC20CookieJar {
     function exposed_isAllowList() external view returns (bool) {
@@ -16,16 +18,16 @@ contract ERC20CookieJarHarnass is ERC20CookieJar {
     }
 }
 
-contract CookieJarTest is PRBTest, StdCheats {
+contract ERC20CookieJarTest is PRBTest, StdCheats {
     address internal alice = makeAddr("alice");
     address internal bob = makeAddr("bob");
     address internal molochDAO = vm.addr(666);
-    address internal testSafe = vm.addr(1337);
 
     ERC20CookieJarHarnass internal cookieJar;
+    ERC20Mintable internal cookieToken = new ERC20Mintable("Mock", "MCK");
+    TestAvatar internal testAvatar = new TestAvatar();
 
     ERC20 internal gatingERC20 = new ERC20("Gate", "GATE");
-    ERC20Mintable internal cookieERC20 = new ERC20Mintable("Mock", "MCK");
 
     uint256 internal cookieAmount = 2e6;
     uint256 internal threshold = 420;
@@ -36,17 +38,22 @@ contract CookieJarTest is PRBTest, StdCheats {
     event GiveCookie(uint256 amount, uint256 fee);
 
     function setUp() public virtual {
+        // address _safeTarget,
         // uint256 _periodLength,
         // uint256 _cookieAmount,
         // address _cookieToken,
-        // address _safeTarget,
         // address _erc20addr,
         // uint256 _threshold,
         bytes memory initParams =
-            abi.encode(3600, cookieAmount, address(cookieERC20), address(testSafe), gatingERC20, 1);
+            abi.encode(address(testAvatar), 3600, cookieAmount, address(cookieToken), gatingERC20, threshold);
 
         cookieJar = new ERC20CookieJarHarnass();
         cookieJar.setUp(initParams);
+
+        // Enable module
+        testAvatar.enableModule(address(cookieJar));
+
+        vm.mockCall(0x000000000000cd17345801aa8147b8D3950260FF, abi.encodeWithSelector(IPoster.post.selector), "");
     }
 
     function testIsAllowed() external {
@@ -54,5 +61,25 @@ contract CookieJarTest is PRBTest, StdCheats {
 
         vm.mockCall(address(gatingERC20), abi.encodeWithSelector(ERC20.balanceOf.selector), abi.encode(threshold));
         assertTrue(cookieJar.exposed_isAllowList());
+    }
+
+    function testReachInJar() external {
+        // No gating token balance so expect fail
+        vm.expectRevert(bytes("not a member"));
+        cookieJar.reachInJar(reason);
+
+        // No cookie balance so expect fail
+        vm.mockCall(address(gatingERC20), abi.encodeWithSelector(ERC20.balanceOf.selector), abi.encode(threshold));
+        vm.expectRevert(bytes("call failure setup"));
+        cookieJar.reachInJar(reason);
+
+        // Put cookie tokens in jar
+        cookieToken.mint(address(testAvatar), cookieAmount);
+
+        // Alice puts her hand in the jar
+        vm.startPrank(alice);
+        vm.expectEmit(false, false, false, true);
+        emit GiveCookie(cookieAmount, cookieAmount / 100);
+        cookieJar.reachInJar(reason);
     }
 }

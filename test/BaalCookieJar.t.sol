@@ -29,7 +29,6 @@ contract BaalCookieJarTest is PRBTest, StdCheats {
 
     ERC20 internal sharesToken = new ERC20("Share", "SHR");
     ERC20 internal lootToken = new ERC20("Loot", "LOOT");
-    ERC20Mintable internal cookieERC20 = new ERC20Mintable("Mock", "MCK");
 
     uint256 internal cookieAmount = 2e6;
 
@@ -51,7 +50,7 @@ contract BaalCookieJarTest is PRBTest, StdCheats {
         // bool _useShares,
         // bool _useLoot
         bytes memory initParams =
-            abi.encode(address(testAvatar), 3600, cookieAmount, address(cookieERC20), molochDAO, 1, true, true);
+            abi.encode(address(testAvatar), 3600, cookieAmount, address(cookieToken), molochDAO, 1, true, true);
 
         cookieJar = new BaalCookieJarHarnass();
         cookieJar.setUp(initParams);
@@ -83,7 +82,7 @@ contract BaalCookieJarTest is PRBTest, StdCheats {
 
         // Alice puts her hand in the jar
         vm.startPrank(alice);
-        vm.expectEmit(true, true, false, true);
+        vm.expectEmit(false, false, false, true);
         emit GiveCookie(cookieAmount, cookieAmount / 100);
         cookieJar.reachInJar(reason);
     }

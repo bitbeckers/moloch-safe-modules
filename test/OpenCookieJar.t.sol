@@ -8,6 +8,8 @@ import { IBaal } from "src/interfaces/IBaal.sol";
 import { IBaalToken } from "src/interfaces/IBaalToken.sol";
 import { OpenCookieJar } from "src/OpenCookieJar.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
+import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
+import { IPoster } from "src/interfaces/IPoster.sol";
 
 contract OpenCookieJarHarnass is OpenCookieJar {
     function exposed_isAllowList() external pure returns (bool) {
@@ -19,11 +21,10 @@ contract OpenCookieJarTest is PRBTest, StdCheats {
     address internal alice = makeAddr("alice");
     address internal bob = makeAddr("bob");
     address internal molochDAO = vm.addr(666);
-    address internal testSafe = vm.addr(1337);
 
     OpenCookieJarHarnass internal cookieJar;
-
-    ERC20Mintable internal cookieERC20 = new ERC20Mintable("Mock", "MCK");
+    ERC20Mintable internal cookieToken = new ERC20Mintable("Mock", "MCK");
+    TestAvatar internal testAvatar = new TestAvatar();
 
     uint256 internal cookieAmount = 2e6;
 
@@ -33,18 +34,38 @@ contract OpenCookieJarTest is PRBTest, StdCheats {
     event GiveCookie(uint256 amount, uint256 fee);
 
     function setUp() public virtual {
+        // address _safeTarget,
         // uint256 _periodLength,
         // uint256 _cookieAmount,
         // address _cookieToken,
-        // address _safeTarget,
-        bytes memory initParams = abi.encode(3600, cookieAmount, address(cookieERC20), address(testSafe));
+        bytes memory initParams = abi.encode(address(testAvatar), 3600, cookieAmount, address(cookieToken));
 
         cookieJar = new OpenCookieJarHarnass();
         cookieJar.setUp(initParams);
+
+        // Enable module
+        testAvatar.enableModule(address(cookieJar));
+
+        vm.mockCall(0x000000000000cd17345801aa8147b8D3950260FF, abi.encodeWithSelector(IPoster.post.selector), "");
     }
 
     function testIsAllowList() external {
         //Always true for OpenCookieJar
         assertTrue(cookieJar.exposed_isAllowList());
+    }
+
+    function testReachInJar() external {
+        // No cookie balance so expect fail
+        vm.expectRevert(bytes("call failure setup"));
+        cookieJar.reachInJar(reason);
+
+        // Put cookie tokens in jar
+        cookieToken.mint(address(testAvatar), cookieAmount);
+
+        // Anon puts their hand in the jar
+        vm.startPrank(alice);
+        vm.expectEmit(false, false, false, true);
+        emit GiveCookie(cookieAmount, cookieAmount / 100);
+        cookieJar.reachInJar(reason);
     }
 }
