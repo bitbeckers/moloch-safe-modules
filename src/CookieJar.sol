@@ -51,7 +51,7 @@ abstract contract CookieJar is Module {
     }
 
     function giveCookie(uint256 amount) private {
-        uint256 fee = (amount / percPoints) * sustainabilityFee;
+        uint256 fee = (amount / PERC_POINTS) * sustainabilityFee;
         // module exec
 
         if (cookieToken == address(0)) {
