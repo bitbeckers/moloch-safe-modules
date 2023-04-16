@@ -5,10 +5,9 @@ import { Module } from "@gnosis.pm/zodiac/contracts/core/Module.sol";
 import { Enum } from "@gnosis.pm/safe-contracts/contracts/common/Enum.sol";
 
 import { IPoster } from "./interfaces/IPoster.sol";
-import "forge-std/console.sol";
 
 abstract contract CookieJar is Module {
-    uint256 public constant percPoints = 1e6;
+    uint256 public constant PERC_POINTS = 1e6;
     uint256 public cookieAmount;
     uint256 public sustainabilityFee;
     address public sustainabilityAddress;
@@ -31,7 +30,7 @@ abstract contract CookieJar is Module {
         target = _safeTarget;
 
         // Cookie jar setup
-        require(_cookieAmount > percPoints, "amount too low");
+        require(_cookieAmount > PERC_POINTS, "amount too low");
         sustainabilityFee = 10_000; // 1%
         posterAddr = 0x000000000000cd17345801aa8147b8D3950260FF;
         sustainabilityAddress = 0x4A9a27d614a74Ee5524909cA27bdBcBB7eD3b315;

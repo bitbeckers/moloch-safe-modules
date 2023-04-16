@@ -8,6 +8,7 @@ import { CookieJar } from "./CookieJar.sol";
 contract CookieJarFactory {
     event SummonCookieJar(address cookieJar, string jarType);
 
+    /*solhint-disable no-empty-blocks*/
     constructor() { }
 
     /*

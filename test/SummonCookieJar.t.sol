@@ -14,16 +14,16 @@ import { OpenCookieJar } from "src/OpenCookieJar.sol";
 
 contract SummonCookieJarTest is PRBTest, StdCheats {
     CookieJarFactory public cookieJarFactory = new CookieJarFactory();
-    address _safeTarget = makeAddr("safe");
-    address _mockERC20 = makeAddr("erc20");
-    address _mockERC721 = makeAddr("erc721");
-    uint256 _cookieAmount = 2e6;
-    uint256 _periodLength = 3600;
-    address _cookieToken = makeAddr("cookieToken");
-    address _dao = makeAddr("dao");
-    uint256 _threshold = 1;
-    bool _useShares = true;
-    bool _useLoot = true;
+    address internal _safeTarget = makeAddr("safe");
+    address internal _mockERC20 = makeAddr("erc20");
+    address internal _mockERC721 = makeAddr("erc721");
+    uint256 internal _cookieAmount = 2e6;
+    uint256 internal _periodLength = 3600;
+    address internal _cookieToken = makeAddr("cookieToken");
+    address internal _dao = makeAddr("dao");
+    uint256 internal _threshold = 1;
+    bool internal _useShares = true;
+    bool internal _useLoot = true;
 
     event SummonCookieJar(address cookieJar, string jarType);
 
@@ -41,6 +41,7 @@ contract SummonCookieJarTest is PRBTest, StdCheats {
 
     function testSummonERC20CookieJar() public {
         ERC20CookieJar erc20CookieJar = new ERC20CookieJar();
+        /*solhint-disable max-line-length*/
         bytes memory _initializer = abi.encode("safe", _periodLength, _cookieAmount, "cookieToken", "erc20", _threshold);
 
         // Only check is event emits, not the values
