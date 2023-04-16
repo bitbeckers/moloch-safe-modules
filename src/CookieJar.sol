@@ -21,6 +21,11 @@ abstract contract CookieJar is Module {
     event Setup(bytes initializationParams);
     event GiveCookie(uint256 amount, uint256 fee);
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     function setUp(bytes memory _initializationParams) public virtual override {
         (address _safeTarget, uint256 _periodLength, uint256 _cookieAmount, address _cookieToken) =
             abi.decode(_initializationParams, (address, uint256, uint256, address));
