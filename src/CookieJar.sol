@@ -67,7 +67,7 @@ abstract contract CookieJar is Module {
                     cookieToken,
                     0,
                     abi.encodeWithSignature("transfer(address,uint256)", abi.encodePacked(sustainabilityAddress, fee)),
-                    Enum.Operation.DelegateCall
+                    Enum.Operation.Call
                 ),
                 "call failure setup"
             );
@@ -77,7 +77,7 @@ abstract contract CookieJar is Module {
                     cookieToken,
                     0,
                     abi.encodeWithSignature("transfer(address,uint256)", abi.encodePacked(msg.sender, amount - fee)),
-                    Enum.Operation.DelegateCall
+                    Enum.Operation.Call
                 ),
                 "call failure setup"
             );

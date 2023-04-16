@@ -6,6 +6,7 @@ import { StdCheats } from "forge-std/StdCheats.sol";
 import { CookieJar } from "src/CookieJar.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
+import { IPoster } from "src/interfaces/IPoster.sol";
 import "forge-std/console.sol";
 
 contract CookieJarHarnass is CookieJar {
@@ -19,7 +20,6 @@ contract CookieJarTest is PRBTest, StdCheats {
     address internal bob = makeAddr("bob");
     address internal owner = makeAddr("owner");
     address internal molochDAO = vm.addr(666);
-    address internal testSafe = vm.addr(1337);
 
     CookieJarHarnass internal cookieJar;
     ERC20Mintable internal cookieToken = new ERC20Mintable("Mock", "MCK");
@@ -45,13 +45,7 @@ contract CookieJarTest is PRBTest, StdCheats {
         // Enable module
         testAvatar.enableModule(address(cookieJar));
 
-        //console.log all addresses
-        console.log("cookieJar: ", address(cookieJar));
-        console.log("cookieToken: ", address(cookieToken));
-        console.log("testAvatar: ", address(testAvatar));
-        console.log("testSafe: ", address(testSafe));
-        console.log("alice: ", address(alice));
-        console.log("bob: ", address(bob));
+        vm.mockCall(0x000000000000cd17345801aa8147b8D3950260FF, abi.encodeWithSelector(IPoster.post.selector), "");
     }
 
     function testIsEnabledModule() external {
@@ -66,20 +60,17 @@ contract CookieJarTest is PRBTest, StdCheats {
 
     function testReachInJar() external {
         // No balance so expect fail
-        vm.expectRevert(bytes(""));
+        vm.expectRevert(bytes("call failure setup"));
         cookieJar.reachInJar(reason);
 
         // Put cookie tokens in jar
 
-        cookieToken.mint(address(testAvatar), cookieAmount * 10 ether);
-        cookieToken.mint(address(testSafe), cookieAmount * 10 ether);
-        cookieToken.mint(address(cookieJar), cookieAmount * 10 ether);
+        cookieToken.mint(address(testAvatar), cookieAmount);
 
         // Alice puts her hand in the jar
         vm.startPrank(alice);
         vm.expectEmit(true, true, false, true);
-        emit Transfer(address(testSafe), address(alice), cookieAmount);
-        //TODO reachInJar reverts
+        emit GiveCookie(cookieAmount, cookieAmount / 100);
         cookieJar.reachInJar(reason);
     }
 }
