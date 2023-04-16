@@ -9,7 +9,7 @@ contract CustomCookieJar is CookieJar {
     address public safeTarget;
     mapping(address allowed => bool exists) public allowList;
 
-    function setUp(bytes memory _initializationParams) public override initializer {
+    function setUp(bytes memory _initializationParams) public override {
         super.setUp(_initializationParams);
 
         (,,,, address _safeTarget, address[] memory _allowList) =

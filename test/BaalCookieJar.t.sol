@@ -47,7 +47,7 @@ contract BaalCookieJarTest is PRBTest, StdCheats {
         // bool _useShares,
         // bool _useLoot
         bytes memory initParams =
-            abi.encode(3600, cookieAmount, address(cookieERC20), address(testSafe), molochDAO, 1, true, true);
+            abi.encode(address(testSafe), 3600, cookieAmount, address(cookieERC20), molochDAO, 1, true, true);
 
         cookieJar = new BaalCookieJarHarnass();
         cookieJar.setUp(initParams);

@@ -10,6 +10,10 @@ import { IPoster } from "src/interfaces/IPoster.sol";
 import "forge-std/console.sol";
 
 contract CookieJarHarnass is CookieJar {
+    function setUp(bytes memory _initializationParams) public virtual override initializer {
+        super.setUp(_initializationParams);
+    }
+
     function exposed_isAllowList() external returns (bool) {
         return isAllowList();
     }
@@ -18,7 +22,6 @@ contract CookieJarHarnass is CookieJar {
 contract CookieJarTest is PRBTest, StdCheats {
     address internal alice = makeAddr("alice");
     address internal bob = makeAddr("bob");
-    address internal owner = makeAddr("owner");
     address internal molochDAO = vm.addr(666);
 
     CookieJarHarnass internal cookieJar;

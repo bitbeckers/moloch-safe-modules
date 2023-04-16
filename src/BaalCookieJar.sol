@@ -11,7 +11,7 @@ contract BaalCookieJar is CookieJar {
     bool public useShares;
     bool public useLoot;
 
-    function setUp(bytes memory _initializationParams) public override initializer {
+    function setUp(bytes memory _initializationParams) public override {
         super.setUp(_initializationParams);
 
         (,,,, address _dao, uint256 _threshold, bool _useShares, bool _useLoot) =
