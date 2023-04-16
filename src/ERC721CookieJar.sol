@@ -7,19 +7,15 @@ import { CookieJar } from "./CookieJar.sol";
 
 contract ERC721CookieJar is CookieJar {
     address public erc721Addr;
-    address public safeTarget;
 
     function setUp(bytes memory _initializationParams) public override initializer {
-        (,,, address _safeTarget, address _erc721addr) =
-            abi.decode(_initializationParams, (uint256, uint256, address, address, address));
+        (,,,,address _erc721addr) =
+            abi.decode(_initializationParams, (address, uint256, uint256, address, address));
 
         super.setUp(_initializationParams);
         erc721Addr = _erc721addr;
-        safeTarget = _safeTarget;
         posterTag = "cookieJar.erc721";
 
-        avatar = safeTarget;
-        target = safeTarget;
     }
 
     function isAllowList() internal view override returns (bool) {

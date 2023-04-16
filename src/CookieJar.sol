@@ -8,7 +8,7 @@ import { IPoster } from "./interfaces/IPoster.sol";
 import "forge-std/console.sol";
 
 abstract contract CookieJar is Module {
-    uint256 public percPoints;
+    uint256 public constant percPoints = 1e6;
     uint256 public cookieAmount;
     uint256 public sustainabilityFee;
     address public sustainabilityAddress;
@@ -22,11 +22,15 @@ abstract contract CookieJar is Module {
     event Setup(bytes initializationParams);
     event GiveCookie(uint256 amount, uint256 fee);
 
-    function setUp(bytes memory _initializationParams) public virtual override {
-        (uint256 _periodLength, uint256 _cookieAmount, address _cookieToken) =
-            abi.decode(_initializationParams, (uint256, uint256, address));
+    function setUp(bytes memory _initializationParams) public virtual override initializer {
+        (address _safeTarget, uint256 _periodLength, uint256 _cookieAmount, address _cookieToken) =
+            abi.decode(_initializationParams, (address, uint256, uint256, address));
 
-        percPoints = 1e6;
+        // Module setup
+        avatar = _safeTarget;
+        target = _safeTarget;
+
+        // Cookie jar setup
         require(_cookieAmount > percPoints, "amount too low");
         sustainabilityFee = 10_000; // 1%
         posterAddr = 0x000000000000cd17345801aa8147b8D3950260FF;

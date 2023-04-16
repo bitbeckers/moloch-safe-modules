@@ -12,8 +12,8 @@ contract CustomCookieJar is CookieJar {
     function setUp(bytes memory _initializationParams) public override initializer {
         super.setUp(_initializationParams);
 
-        (,,, address _safeTarget, address[] memory _allowList) =
-            abi.decode(_initializationParams, (uint256, uint256, address, address, address[]));
+        (,,,, address _safeTarget, address[] memory _allowList) =
+            abi.decode(_initializationParams, (address, uint256, uint256, address, address, address[]));
 
         safeTarget = _safeTarget;
         posterTag = "cookieJar.custom";
@@ -27,9 +27,6 @@ contract CustomCookieJar is CookieJar {
                 ++i;
             }
         }
-
-        avatar = safeTarget;
-        target = safeTarget;
     }
 
     function isAllowList() internal view override returns (bool) {

@@ -14,18 +14,14 @@ contract BaalCookieJar is CookieJar {
     function setUp(bytes memory _initializationParams) public override initializer {
         super.setUp(_initializationParams);
 
-        (,,, address _safeTarget, address _dao, uint256 _threshold, bool _useShares, bool _useLoot) =
-            abi.decode(_initializationParams, (uint256, uint256, address, address, address, uint256, bool, bool));
+        (,,,, address _dao, uint256 _threshold, bool _useShares, bool _useLoot) =
+            abi.decode(_initializationParams, (address, uint256, uint256, address, address, uint256, bool, bool));
 
         dao = _dao;
         threshold = _threshold;
         useShares = _useShares;
         useLoot = _useLoot;
         posterTag = "daohaus.member.database";
-
-        // IBaal(dao).target();
-        avatar = _safeTarget;
-        target = _safeTarget;
     }
 
     function isAllowList() internal view override returns (bool) {
