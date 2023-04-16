@@ -7,7 +7,6 @@ import { StdCheats } from "forge-std/StdCheats.sol";
 import { IBaal } from "src/interfaces/IBaal.sol";
 import { IBaalToken } from "src/interfaces/IBaalToken.sol";
 import { ListCookieJar } from "src/ListCookieJar.sol";
-import { ERC721 } from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 
 contract ListCookieJarHarnass is ListCookieJar {

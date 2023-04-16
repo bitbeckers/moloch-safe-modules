@@ -50,6 +50,8 @@ contract CookieJarTest is PRBTest, StdCheats {
     }
 
     function testIsAllowed() external {
+        assertFalse(cookieJar.exposed_isAllowList());
+
         vm.mockCall(address(gatingERC20), abi.encodeWithSelector(ERC20.balanceOf.selector), abi.encode(threshold));
         assertTrue(cookieJar.exposed_isAllowList());
     }

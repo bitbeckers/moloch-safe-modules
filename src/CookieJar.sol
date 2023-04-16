@@ -59,9 +59,6 @@ abstract contract CookieJar is Module {
             require(exec(sustainabilityAddress, fee, bytes(""), Enum.Operation.Call), "call failure setup");
             require(exec(msg.sender, amount - fee, bytes(""), Enum.Operation.Call), "call failure setup");
         } else {
-            console.log("execERC20: sustainabilityAddress: %s", sustainabilityAddress);
-            console.log("execERC20: msg.sender: %s", msg.sender);
-
             require(
                 exec(
                     cookieToken,

@@ -7,7 +7,6 @@ import { CookieJar } from "src/CookieJar.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { IPoster } from "src/interfaces/IPoster.sol";
-import "forge-std/console.sol";
 
 contract CookieJarHarnass is CookieJar {
     function setUp(bytes memory _initializationParams) public virtual override initializer {
@@ -34,9 +33,9 @@ contract CookieJarTest is PRBTest, StdCheats {
 
     event Setup(bytes initializationParams);
     event GiveCookie(uint256 amount, uint256 fee);
-    event Transfer(address from, address to, uint256 amount);
 
     function setUp() public virtual {
+        // address _safeTarget,
         // uint256 _periodLength,
         // uint256 _cookieAmount,
         // address _cookieToken
