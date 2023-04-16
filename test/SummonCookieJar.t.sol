@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: Unlicense
+pragma solidity 0.8.19;
+
+import { PRBTest } from "@prb/test/PRBTest.sol";
+import { console2 } from "forge-std/console2.sol";
+import { StdCheats } from "forge-std/StdCheats.sol";
+
+import { CookieJarFactory } from "src/SummonCookieJar.sol";
+import { BaalCookieJar } from "src/BaalCookieJar.sol";
+import { ERC20CookieJar } from "src/ERC20CookieJar.sol";
+import { ERC721CookieJar } from "src/ERC721CookieJar.sol";
+
+contract SummonCookieJar is PRBTest, StdCheats {
+    CookieJarFactory public cookieJarFactory = new CookieJarFactory();
+    address _safeTarget = makeAddr("safe");
+    address _mockERC20 = makeAddr("erc20");
+    address _mockERC721 = makeAddr("erc721");
+    uint256 _cookieAmount = 2e6;
+    uint256 _periodLength = 3600;
+    address _cookieToken = makeAddr("cookieToken");
+    address _dao = makeAddr("dao");
+    uint256 _threshold = 1;
+    bool _useShares = true;
+    bool _useLoot = true;
+
+    function testSummonBaalCookieJar() public {
+        BaalCookieJar baalCookieJar = new BaalCookieJar();
+        bytes memory _initializer =
+            abi.encode("safe", _periodLength, _cookieAmount, "cookieToken", "dao", _threshold, _useShares, _useLoot);
+
+        cookieJarFactory.summonCookieJar("Baal", address(baalCookieJar), _initializer);
+    }
+
+    function testSummonERC20CookieJar() public {
+        ERC20CookieJar erc20CookieJar = new ERC20CookieJar();
+        bytes memory _initializer = abi.encode("safe", _periodLength, _cookieAmount, "cookieToken", "erc20", _threshold);
+        cookieJarFactory.summonCookieJar("ERC20", address(erc20CookieJar), _initializer);
+    }
+
+    function testSummonERC721CookieJar() public {
+        ERC721CookieJar erc721CookieJar = new ERC721CookieJar();
+        bytes memory _initializer = abi.encode("safe", _periodLength, _cookieAmount, "cookieToken", "erc721");
+        cookieJarFactory.summonCookieJar("ERC721", address(erc721CookieJar), _initializer);
+    }
+}
