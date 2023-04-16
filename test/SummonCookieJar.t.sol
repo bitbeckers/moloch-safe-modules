@@ -9,6 +9,8 @@ import { CookieJarFactory } from "src/SummonCookieJar.sol";
 import { BaalCookieJar } from "src/BaalCookieJar.sol";
 import { ERC20CookieJar } from "src/ERC20CookieJar.sol";
 import { ERC721CookieJar } from "src/ERC721CookieJar.sol";
+import { ListCookieJar } from "src/ListCookieJar.sol";
+import { OpenCookieJar } from "src/OpenCookieJar.sol";
 
 contract SummonCookieJar is PRBTest, StdCheats {
     CookieJarFactory public cookieJarFactory = new CookieJarFactory();
@@ -41,5 +43,21 @@ contract SummonCookieJar is PRBTest, StdCheats {
         ERC721CookieJar erc721CookieJar = new ERC721CookieJar();
         bytes memory _initializer = abi.encode("safe", _periodLength, _cookieAmount, "cookieToken", "erc721");
         cookieJarFactory.summonCookieJar("ERC721", address(erc721CookieJar), _initializer);
+    }
+
+    function testSummonListCookieJar() public {
+        ListCookieJar listCookieJar = new ListCookieJar();
+        address[] memory _list = new address[](2);
+
+        _list[0] = makeAddr("alice");
+        _list[1] = makeAddr("bob");
+        bytes memory _initializer = abi.encode("safe", _periodLength, _cookieAmount, "cookieToken", _list);
+        cookieJarFactory.summonCookieJar("List", address(listCookieJar), _initializer);
+    }
+
+    function testSummonOpenCookieJar() public {
+        OpenCookieJar openCookieJar = new OpenCookieJar();
+        bytes memory _initializer = abi.encode("safe", _periodLength, _cookieAmount, "cookieToken");
+        cookieJarFactory.summonCookieJar("Open", address(openCookieJar), _initializer);
     }
 }
