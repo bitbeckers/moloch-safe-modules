@@ -6,23 +6,24 @@ import { console2 } from "forge-std/console2.sol";
 import { StdCheats } from "forge-std/StdCheats.sol";
 import { IBaal } from "src/interfaces/IBaal.sol";
 import { IBaalToken } from "src/interfaces/IBaalToken.sol";
-import { OpenCookieJar } from "src/OpenCookieJar.sol";
+import { ListCookieJar } from "src/ListCookieJar.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { IPoster } from "src/interfaces/IPoster.sol";
 
-contract OpenCookieJarHarnass is OpenCookieJar {
-    function exposed_isAllowList() external pure returns (bool) {
+contract ListCookieJarHarnass is ListCookieJar {
+    function exposed_isAllowList() external view returns (bool) {
         return isAllowList();
     }
 }
 
-contract OpenCookieJarTest is PRBTest, StdCheats {
+contract ListCookieJarTest is PRBTest, StdCheats {
     address internal alice = makeAddr("alice");
     address internal bob = makeAddr("bob");
     address internal molochDAO = vm.addr(666);
+    address internal testSafe = vm.addr(1337);
 
-    OpenCookieJarHarnass internal cookieJar;
+    ListCookieJarHarnass internal cookieJar;
     ERC20Mintable internal cookieToken = new ERC20Mintable("Mock", "MCK");
     TestAvatar internal testAvatar = new TestAvatar();
 
@@ -34,13 +35,18 @@ contract OpenCookieJarTest is PRBTest, StdCheats {
     event GiveCookie(uint256 amount, uint256 fee);
 
     function setUp() public virtual {
+        address[] memory allowList = new address[](2);
+        allowList[0] = alice;
+        allowList[1] = bob;
+
         // address _safeTarget,
         // uint256 _periodLength,
         // uint256 _cookieAmount,
         // address _cookieToken,
-        bytes memory initParams = abi.encode(address(testAvatar), 3600, cookieAmount, address(cookieToken));
+        // address[] _allowList,
+        bytes memory initParams = abi.encode(address(testAvatar), 3600, cookieAmount, address(cookieToken), allowList);
 
-        cookieJar = new OpenCookieJarHarnass();
+        cookieJar = new ListCookieJarHarnass();
         cookieJar.setUp(initParams);
 
         // Enable module
@@ -49,12 +55,21 @@ contract OpenCookieJarTest is PRBTest, StdCheats {
         vm.mockCall(0x000000000000cd17345801aa8147b8D3950260FF, abi.encodeWithSelector(IPoster.post.selector), "");
     }
 
-    function testIsAllowList() external {
-        //Always true for OpenCookieJar
+    function testIsAllowed() external {
+        assertFalse(cookieJar.exposed_isAllowList());
+
+        vm.startPrank(alice);
         assertTrue(cookieJar.exposed_isAllowList());
     }
 
     function testReachInJar() external {
+        // Anon puts their hand in the jar
+        vm.expectRevert(bytes("not a member"));
+        cookieJar.reachInJar(reason);
+
+        // Alice puts her hand in the jar
+        vm.startPrank(alice);
+
         // No cookie balance so expect fail
         vm.expectRevert(bytes("call failure setup"));
         cookieJar.reachInJar(reason);
@@ -62,8 +77,6 @@ contract OpenCookieJarTest is PRBTest, StdCheats {
         // Put cookie tokens in jar
         cookieToken.mint(address(testAvatar), cookieAmount);
 
-        // Anon puts their hand in the jar
-        vm.startPrank(alice);
         vm.expectEmit(false, false, false, true);
         emit GiveCookie(cookieAmount, cookieAmount / 100);
         cookieJar.reachInJar(reason);

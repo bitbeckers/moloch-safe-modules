@@ -3,69 +3,70 @@ pragma solidity 0.8.19;
 
 import { Clones } from "@openzeppelin/contracts/proxy/Clones.sol";
 
-import { BaalCookieJar } from "./BaalCookieJar.sol";
-import { ERC20CookieJar } from "./ERC20CookieJar.sol";
-import { OpenCookieJar } from "./OpenCookieJar.sol";
+import { CookieJar } from "./CookieJar.sol";
 
 contract CookieJarFactory {
+    event SummonCookieJar(address cookieJar, string jarType);
 
-    address public baalCookieJarSingleton;
-    address public erc20CookieJarSingleton;
-    address public openJarSingleton;
-    
+    /*solhint-disable no-empty-blocks*/
+    constructor() { }
 
-    event SummonCookieJar(
-        address indexed controller,
-        address cookieJar,
-        bytes jarType,
-        uint256 cookieAmount
-    );
-
-    constructor(
-        address _baalCookieJarSingleton, 
-        address _openJarSingleton, 
-        address _erc20CookieJarSingleton) {
-        baalCookieJarSingleton = _baalCookieJarSingleton;   
-        openJarSingleton = _openJarSingleton;
-        erc20CookieJarSingleton = _erc20CookieJarSingleton;
-    }
-
-    function summonBaalCookieJar(address _dao, uint256 _cookieAmount) public {
+    /*
+        BaalCookieJar
         bytes memory _initializer = abi.encode(
-            _dao, _cookieAmount);
-
-        BaalCookieJar _cookieJar = BaalCookieJar(Clones.clone(baalCookieJarSingleton));
-        _cookieJar.setUp(_initializer);
-
-        emit SummonCookieJar(_dao, address(_cookieJar), bytes("baal"), _cookieAmount);
-
-    }
-
-    function summonErc20CookieJar(
-        address _erc20Addr, 
-        address _target, 
-        uint256 _threshold, 
-        uint256 _cookieAmount) public {
-        bytes memory _initializer = abi.encode(
-            _erc20Addr,
-            _target,
+            _safeTarget,
+            uint256 _cookieAmount, 
+            uint256 _periodLength,
+            address _cookieToken,
+            _dao,
             _threshold,
-            _cookieAmount);
+            _useShares,
+            _useLoot);
+        Erc20CookieJar
+        bytes memory _initializer = abi.encode(
+            _safeTarget,
+            uint256 _cookieAmount, 
+            uint256 _periodLength,
+            address _cookieToken,
+            _erc20Addr,
+            _threshold);
+        Erc721
+        bytes memory _initializer = abi.encode(
+            _safeTarget,
+            uint256 _cookieAmount, 
+            uint256 _periodLength,
+            address _cookieToken,
+            _erc721Addr);
+        listCookieJar
+        bytes memory _initializer = abi.encode(
+            _safeTarget, 
+            uint256 _cookieAmount, 
+            uint256 _periodLength,
+            address _cookieToken,
+            _allowedAddresses);
+        OpenCookieJar
+        bytes memory _initializer = abi.encode(
+            _safeTarget,
+            uint256 _cookieAmount, 
+            uint256 _periodLength,
+            address _cookieToken,);
+    */
 
-        ERC20CookieJar _cookieJar = ERC20CookieJar(Clones.clone(erc20CookieJarSingleton));
+    /*
+        // example encode
+        // open jar
+        var abiCoder = ethers.utils.defaultAbiCoder;
+        abiCoder.encode(["address","uint256","uint256","address"],
+        ["0x4A9a27d614a74Ee5524909cA27bdBcBB7eD3b315",
+        "100000000000000000",
+        "3600",
+        "0x4A9a27d614a74Ee5524909cA27bdBcBB7eD3b315"])
+    */
+
+    function summonCookieJar(string memory _cookieType, address _singleton, bytes memory _initializer) public {
+        CookieJar _cookieJar = CookieJar(Clones.clone(_singleton));
         _cookieJar.setUp(_initializer);
 
-        emit SummonCookieJar(_target, address(_cookieJar), bytes("none"), _cookieAmount);
-
-    }
-
-    function summonCookieJar(address _target, uint256 _cookieAmount) public {
-        bytes memory _initializer = abi.encode(_target, _cookieAmount);
-
-        OpenCookieJar _cookieJar = OpenCookieJar(Clones.clone(openJarSingleton));
-        _cookieJar.setUp(_initializer);
-
-        emit SummonCookieJar(_target, address(_cookieJar), bytes("none"), _cookieAmount);
-
+        emit SummonCookieJar(address(_cookieJar), _cookieType);
     }
 }
