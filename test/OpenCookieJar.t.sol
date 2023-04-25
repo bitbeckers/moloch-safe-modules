@@ -1,15 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.19 <0.9.0;
 
-import { PRBTest } from "@prb/test/PRBTest.sol";
 import { console2 } from "forge-std/console2.sol";
-import { StdCheats } from "forge-std/StdCheats.sol";
-import { IBaal } from "src/interfaces/IBaal.sol";
-import { IBaalToken } from "src/interfaces/IBaalToken.sol";
 import { OpenCookieJar } from "src/OpenCookieJar.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { IPoster } from "src/interfaces/IPoster.sol";
+
+import {CloneSummoner} from "test/utils/Summoner.sol";
 
 contract OpenCookieJarHarnass is OpenCookieJar {
     function exposed_isAllowList() external pure returns (bool) {
@@ -17,7 +15,7 @@ contract OpenCookieJarHarnass is OpenCookieJar {
     }
 }
 
-contract OpenCookieJarTest is PRBTest, StdCheats {
+contract OpenCookieJarTest is CloneSummoner {
     address internal alice = makeAddr("alice");
     address internal bob = makeAddr("bob");
     address internal molochDAO = vm.addr(666);

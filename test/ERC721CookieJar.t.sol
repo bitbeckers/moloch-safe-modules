@@ -4,13 +4,13 @@ pragma solidity >=0.8.19 <0.9.0;
 import { PRBTest } from "@prb/test/PRBTest.sol";
 import { console2 } from "forge-std/console2.sol";
 import { StdCheats } from "forge-std/StdCheats.sol";
-import { IBaal } from "src/interfaces/IBaal.sol";
-import { IBaalToken } from "src/interfaces/IBaalToken.sol";
 import { ERC721CookieJar } from "src/ERC721CookieJar.sol";
 import { ERC721 } from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { IPoster } from "src/interfaces/IPoster.sol";
+
+import { CloneSummoner } from "test/utils/Summoner.sol";
 
 contract ERC721CookieJarHarnass is ERC721CookieJar {
     function exposed_isAllowList() external view returns (bool) {
@@ -18,7 +18,7 @@ contract ERC721CookieJarHarnass is ERC721CookieJar {
     }
 }
 
-contract ERC721CookieJarTest is PRBTest, StdCheats {
+contract ERC721CookieJarTest is CloneSummoner {
     address internal alice = makeAddr("alice");
     address internal bob = makeAddr("bob");
 
@@ -45,8 +45,7 @@ contract ERC721CookieJarTest is PRBTest, StdCheats {
         bytes memory initParams =
             abi.encode(address(testAvatar), 3600, cookieAmount, address(cookieToken), gatingERC721);
 
-        cookieJar = new ERC721CookieJarHarnass();
-        cookieJar.setUp(initParams);
+        cookieJar = getERC721CookieJar(initParams);
 
         // Enable module
         testAvatar.enableModule(address(cookieJar));

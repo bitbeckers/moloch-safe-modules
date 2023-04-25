@@ -1,15 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.19 <0.9.0;
 
-import { PRBTest } from "@prb/test/PRBTest.sol";
 import { console2 } from "forge-std/console2.sol";
-import { StdCheats } from "forge-std/StdCheats.sol";
-import { IBaal } from "src/interfaces/IBaal.sol";
-import { IBaalToken } from "src/interfaces/IBaalToken.sol";
 import { ListCookieJar } from "src/ListCookieJar.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { IPoster } from "src/interfaces/IPoster.sol";
+
+import { CloneSummoner } from "test/utils/Summoner.sol";
 
 contract ListCookieJarHarnass is ListCookieJar {
     function exposed_isAllowList() external view returns (bool) {
@@ -17,7 +15,7 @@ contract ListCookieJarHarnass is ListCookieJar {
     }
 }
 
-contract ListCookieJarTest is PRBTest, StdCheats {
+contract ListCookieJarTest is CloneSummoner {
     address internal alice = makeAddr("alice");
     address internal bob = makeAddr("bob");
     address internal molochDAO = vm.addr(666);
@@ -46,8 +44,7 @@ contract ListCookieJarTest is PRBTest, StdCheats {
         // address[] _allowList,
         bytes memory initParams = abi.encode(address(testAvatar), 3600, cookieAmount, address(cookieToken), allowList);
 
-        cookieJar = new ListCookieJarHarnass();
-        cookieJar.setUp(initParams);
+        cookieJar = getListCookieJar(initParams);
 
         // Enable module
         testAvatar.enableModule(address(cookieJar));
