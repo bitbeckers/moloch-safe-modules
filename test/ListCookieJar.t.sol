@@ -22,7 +22,7 @@ contract ListCookieJarTest is CloneSummoner {
     string internal reason = "CookieJar: Testing";
 
     event Setup(bytes initializationParams);
-    event GiveCookie(uint256 amount, uint256 fee);
+    event GiveCookie(address cookieMonster, uint256 amount, uint256 fee);
 
     function setUp() public virtual {
         address[] memory allowList = new address[](2);
@@ -67,7 +67,7 @@ contract ListCookieJarTest is CloneSummoner {
         cookieToken.mint(address(testAvatar), cookieAmount);
 
         vm.expectEmit(false, false, false, true);
-        emit GiveCookie(cookieAmount, cookieAmount / 100);
+        emit GiveCookie(alice, cookieAmount, cookieAmount / 100);
         cookieJar.reachInJar(reason);
     }
 }
