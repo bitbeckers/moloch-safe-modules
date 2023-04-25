@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.19 <0.9.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
 import { CookieJarFactory } from "src/SummonCookieJar.sol";
 import { BaalCookieJarHarnass } from "test/BaalCookieJar.t.sol";
 import { ERC20CookieJar } from "src/ERC20CookieJar.sol";

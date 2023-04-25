@@ -11,7 +11,7 @@ import { CookieJarFactory } from "../src/SummonCookieJar.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 
 //import forge console
-import "forge-std/console.sol";
+import { console } from "forge-std/console.sol";
 
 /// @dev See the Solidity Scripting tutorial: https://book.getfoundry.sh/tutorials/solidity-scripting
 contract DeployCookieJar is Script {
