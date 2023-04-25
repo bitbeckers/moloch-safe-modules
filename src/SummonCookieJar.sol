@@ -63,10 +63,10 @@ contract CookieJarFactory {
         "0x4A9a27d614a74Ee5524909cA27bdBcBB7eD3b315"])
     */
 
-    function summonCookieJar(string memory _cookieType, address _singleton, bytes memory _initializer) public {
+    function summonCookieJar(string memory details, address _singleton, bytes memory _initializer) public {
         CookieJar _cookieJar = CookieJar(Clones.clone(_singleton));
         _cookieJar.setUp(_initializer);
 
-        emit SummonCookieJar(address(_cookieJar), _cookieType, _initializer);
+        emit SummonCookieJar(address(_cookieJar), details, _initializer);
     }
 }
