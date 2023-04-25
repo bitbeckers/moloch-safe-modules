@@ -25,7 +25,7 @@ contract SummonCookieJarTest is PRBTest, StdCheats {
     bool internal _useShares = true;
     bool internal _useLoot = true;
 
-    event SummonCookieJar(address cookieJar, string jarType);
+    event SummonCookieJar(address cookieJar, string jarType, bytes initializer);
 
     function testSummonBaalCookieJar() public {
         BaalCookieJar baalCookieJar = new BaalCookieJar();
@@ -34,7 +34,7 @@ contract SummonCookieJarTest is PRBTest, StdCheats {
 
         // Only check is event emits, not the values
         vm.expectEmit(false, false, false, false);
-        emit SummonCookieJar(address(baalCookieJar), "Baal");
+        emit SummonCookieJar(address(baalCookieJar), "Baal", _initializer);
 
         cookieJarFactory.summonCookieJar("Baal", address(baalCookieJar), _initializer);
     }
@@ -46,7 +46,7 @@ contract SummonCookieJarTest is PRBTest, StdCheats {
 
         // Only check is event emits, not the values
         vm.expectEmit(false, false, false, false);
-        emit SummonCookieJar(address(erc20CookieJar), "ERC20");
+        emit SummonCookieJar(address(erc20CookieJar), "ERC20", _initializer);
         cookieJarFactory.summonCookieJar("ERC20", address(erc20CookieJar), _initializer);
     }
 
@@ -56,7 +56,7 @@ contract SummonCookieJarTest is PRBTest, StdCheats {
 
         // Only check is event emits, not the values
         vm.expectEmit(false, false, false, false);
-        emit SummonCookieJar(address(erc721CookieJar), "ERC721");
+        emit SummonCookieJar(address(erc721CookieJar), "ERC721", _initializer);
         cookieJarFactory.summonCookieJar("ERC721", address(erc721CookieJar), _initializer);
     }
 
@@ -70,7 +70,7 @@ contract SummonCookieJarTest is PRBTest, StdCheats {
 
         // Only check is event emits, not the values
         vm.expectEmit(false, false, false, false);
-        emit SummonCookieJar(address(listCookieJar), "List");
+        emit SummonCookieJar(address(listCookieJar), "List", _initializer);
         cookieJarFactory.summonCookieJar("List", address(listCookieJar), _initializer);
     }
 
@@ -80,7 +80,7 @@ contract SummonCookieJarTest is PRBTest, StdCheats {
 
         // Only check is event emits, not the values
         vm.expectEmit(false, false, false, false);
-        emit SummonCookieJar(address(openCookieJar), "Open");
+        emit SummonCookieJar(address(openCookieJar), "Open", _initializer);
         cookieJarFactory.summonCookieJar("Open", address(openCookieJar), _initializer);
     }
 }

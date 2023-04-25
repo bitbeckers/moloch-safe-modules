@@ -41,7 +41,7 @@ contract CloneSummoner is Test {
     ListCookieJarHarnass internal listCookieJarImplementation = new ListCookieJarHarnass();
     OpenCookieJarHarnass internal openCookieJarImplementation = new OpenCookieJarHarnass();
 
-    event SummonCookieJar(address cookieJar, string _cookieType);
+    event SummonCookieJar(address cookieJar, string _cookieType, bytes initParams);
 
     function getBaalCookieJar(bytes memory initParams) public returns (BaalCookieJarHarnass) {
         vm.recordLogs();
@@ -49,7 +49,7 @@ contract CloneSummoner is Test {
 
         Vm.Log[] memory entries = vm.getRecordedLogs();
         assertEq(entries.length, 3);
-        assertEq(entries[2].topics[0], keccak256("SummonCookieJar(address,string)"));
+        assertEq(entries[2].topics[0], keccak256("SummonCookieJar(address,string,bytes)"));
         return BaalCookieJarHarnass(abi.decode(entries[2].data, (address)));
     }
 
@@ -59,7 +59,7 @@ contract CloneSummoner is Test {
 
         Vm.Log[] memory entries = vm.getRecordedLogs();
         assertEq(entries.length, 3);
-        assertEq(entries[2].topics[0], keccak256("SummonCookieJar(address,string)"));
+        assertEq(entries[2].topics[0], keccak256("SummonCookieJar(address,string,bytes)"));
         return ERC20CookieJarHarnass(abi.decode(entries[2].data, (address)));
     }
 
@@ -69,7 +69,7 @@ contract CloneSummoner is Test {
 
         Vm.Log[] memory entries = vm.getRecordedLogs();
         assertEq(entries.length, 3);
-        assertEq(entries[2].topics[0], keccak256("SummonCookieJar(address,string)"));
+        assertEq(entries[2].topics[0], keccak256("SummonCookieJar(address,string,bytes)"));
         return ERC721CookieJarHarnass(abi.decode(entries[2].data, (address)));
     }
 
@@ -79,7 +79,7 @@ contract CloneSummoner is Test {
 
         Vm.Log[] memory entries = vm.getRecordedLogs();
         assertEq(entries.length, 3);
-        assertEq(entries[2].topics[0], keccak256("SummonCookieJar(address,string)"));
+        assertEq(entries[2].topics[0], keccak256("SummonCookieJar(address,string,bytes)"));
         return ListCookieJarHarnass(abi.decode(entries[2].data, (address)));
     }
 
@@ -89,7 +89,7 @@ contract CloneSummoner is Test {
 
         Vm.Log[] memory entries = vm.getRecordedLogs();
         assertEq(entries.length, 3);
-        assertEq(entries[2].topics[0], keccak256("SummonCookieJar(address,string)"));
+        assertEq(entries[2].topics[0], keccak256("SummonCookieJar(address,string,bytes)"));
         return OpenCookieJarHarnass(abi.decode(entries[2].data, (address)));
     }
 }
