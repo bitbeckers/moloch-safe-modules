@@ -33,7 +33,7 @@ contract CookieJarTest is PRBTest, StdCheats {
     string internal reason = "CookieJar: Testing";
 
     event Setup(bytes initializationParams);
-    event GiveCookie(uint256 amount, uint256 fee);
+    event GiveCookie(address cookieMonster, uint256 amount, uint256 fee);
     event NewPost(address indexed user, string content, string indexed tag);
 
     function setUp() public virtual {
@@ -61,6 +61,10 @@ contract CookieJarTest is PRBTest, StdCheats {
         assertTrue(cookieJar.exposed_isAllowList());
     }
 
+    function testCanClaim() external {
+        assertTrue(cookieJar.canClaim());
+    }
+
     function testReachInJar() external {
         // No balance so expect fail
         vm.expectRevert(bytes("call failure setup"));
@@ -72,9 +76,11 @@ contract CookieJarTest is PRBTest, StdCheats {
 
         // Alice puts her hand in the jar
         vm.startPrank(alice);
+        assertTrue(cookieJar.canClaim());
         vm.expectEmit(true, true, false, true);
-        emit GiveCookie(cookieAmount, cookieAmount / 100);
+        emit GiveCookie(alice, cookieAmount, cookieAmount / 100);
         cookieJar.reachInJar(reason);
+        assertFalse(cookieJar.canClaim());
     }
 
     function testAssessReason() external {
@@ -90,5 +96,18 @@ contract CookieJarTest is PRBTest, StdCheats {
             0x000000000000cd17345801aa8147b8D3950260FF, abi.encodeCall(IPoster.post, ("DOWN", "poster.test.testEmit"))
         );
         cookieJar.assessReason(uid, false);
+    }
+
+    function testGiveAwayCookie() external {
+        // Put cookie tokens in jar
+        cookieToken.mint(address(testAvatar), cookieAmount);
+
+        // Alice puts her hand in the jar
+        vm.startPrank(alice);
+        assertTrue(cookieJar.canClaim());
+        vm.expectEmit(true, true, false, true);
+        emit GiveCookie(bob, cookieAmount, cookieAmount / 100);
+        cookieJar.reachInJar(bob, reason);
+        assertFalse(cookieJar.canClaim());
     }
 }

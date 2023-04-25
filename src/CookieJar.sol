@@ -19,7 +19,7 @@ abstract contract CookieJar is Module {
     mapping(address claimer => uint256 dateTime) public claims;
 
     event Setup(bytes initializationParams);
-    event GiveCookie(uint256 amount, uint256 fee);
+    event GiveCookie(address cookieMonster, uint256 amount, uint256 fee);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -51,17 +51,26 @@ abstract contract CookieJar is Module {
         require(isValidClaimPeriod(), "not a valid claim period");
 
         claims[msg.sender] = block.timestamp;
-        giveCookie(cookieAmount);
+        giveCookie(msg.sender, cookieAmount);
         postReason(_reason);
     }
 
-    function giveCookie(uint256 amount) private {
+    function reachInJar(address cookieMonster, string calldata _reason) public {
+        require(isAllowList(), "not a member");
+        require(isValidClaimPeriod(), "not a valid claim period");
+
+        claims[msg.sender] = block.timestamp;
+        giveCookie(cookieMonster, cookieAmount);
+        postReason(_reason);
+    }
+
+    function giveCookie(address cookieMonster, uint256 amount) private {
         uint256 fee = (amount / PERC_POINTS) * sustainabilityFee;
         // module exec
 
         if (cookieToken == address(0)) {
             require(exec(sustainabilityAddress, fee, bytes(""), Enum.Operation.Call), "call failure setup");
-            require(exec(msg.sender, amount - fee, bytes(""), Enum.Operation.Call), "call failure setup");
+            require(exec(cookieMonster, amount - fee, bytes(""), Enum.Operation.Call), "call failure setup");
         } else {
             require(
                 exec(
@@ -77,13 +86,13 @@ abstract contract CookieJar is Module {
                 exec(
                     cookieToken,
                     0,
-                    abi.encodeWithSignature("transfer(address,uint256)", abi.encodePacked(msg.sender, amount - fee)),
+                    abi.encodeWithSignature("transfer(address,uint256)", abi.encodePacked(cookieMonster, amount - fee)),
                     Enum.Operation.Call
                 ),
                 "call failure setup"
             );
         }
-        emit GiveCookie(amount, fee);
+        emit GiveCookie(cookieMonster, amount, fee);
     }
 
     function postReason(string calldata _reason) internal {

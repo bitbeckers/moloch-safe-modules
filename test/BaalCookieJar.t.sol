@@ -36,7 +36,7 @@ contract BaalCookieJarTest is CloneSummoner {
     string internal reason = "BaalCookieJar: Testing";
 
     event Setup(bytes initializationParams);
-    event GiveCookie(uint256 amount, uint256 fee);
+    event GiveCookie(address cookieMonster, uint256 amount, uint256 fee);
 
     function setUp() public virtual {
         vm.mockCall(molochDAO, abi.encodeWithSelector(IBaal.sharesToken.selector), abi.encode(sharesToken));
@@ -83,7 +83,7 @@ contract BaalCookieJarTest is CloneSummoner {
         // Alice puts her hand in the jar
         vm.startPrank(alice);
         vm.expectEmit(false, false, false, true);
-        emit GiveCookie(cookieAmount, cookieAmount / 100);
+        emit GiveCookie(alice, cookieAmount, cookieAmount / 100);
         cookieJar.reachInJar(reason);
     }
 }
