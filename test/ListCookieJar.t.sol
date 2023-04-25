@@ -1,19 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.19 <0.9.0;
 
-import { console2 } from "forge-std/console2.sol";
-import { ListCookieJar } from "src/ListCookieJar.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { IPoster } from "src/interfaces/IPoster.sol";
 
-import { CloneSummoner } from "test/utils/Summoner.sol";
-
-contract ListCookieJarHarnass is ListCookieJar {
-    function exposed_isAllowList() external view returns (bool) {
-        return isAllowList();
-    }
-}
+import { CloneSummoner, ListCookieJarHarnass } from "test/utils/CloneSummoner.sol";
 
 contract ListCookieJarTest is CloneSummoner {
     address internal alice = makeAddr("alice");

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.19 <0.9.0;
 
-import { console2 } from "forge-std/console2.sol";
 import { IBaal } from "src/interfaces/IBaal.sol";
 import { IBaalToken } from "src/interfaces/IBaalToken.sol";
 import { BaalCookieJar } from "src/BaalCookieJar.sol";
@@ -11,7 +10,7 @@ import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { IPoster } from "src/interfaces/IPoster.sol";
 import { CookieJarFactory } from "src/SummonCookieJar.sol";
 
-import { CloneSummoner } from "test/utils/Summoner.sol";
+import { CloneSummoner } from "test/utils/CloneSummoner.sol";
 
 contract BaalCookieJarHarnass is BaalCookieJar {
     function exposed_isAllowList() external view returns (bool) {

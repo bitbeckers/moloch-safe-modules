@@ -1,22 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.19 <0.9.0;
 
-import { PRBTest } from "@prb/test/PRBTest.sol";
-import { console2 } from "forge-std/console2.sol";
-import { StdCheats } from "forge-std/StdCheats.sol";
-import { ERC721CookieJar } from "src/ERC721CookieJar.sol";
 import { ERC721 } from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { IPoster } from "src/interfaces/IPoster.sol";
 
-import { CloneSummoner } from "test/utils/Summoner.sol";
-
-contract ERC721CookieJarHarnass is ERC721CookieJar {
-    function exposed_isAllowList() external view returns (bool) {
-        return isAllowList();
-    }
-}
+import { CloneSummoner, ERC721CookieJarHarnass } from "test/utils/CloneSummoner.sol";
 
 contract ERC721CookieJarTest is CloneSummoner {
     address internal alice = makeAddr("alice");

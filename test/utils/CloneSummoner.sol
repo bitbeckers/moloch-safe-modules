@@ -2,17 +2,36 @@
 pragma solidity >=0.8.19 <0.9.0;
 
 import "forge-std/Test.sol";
-import { IBaalToken } from "src/interfaces/IBaalToken.sol";
-import { ERC20 } from "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
-import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
-import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
-import { IPoster } from "src/interfaces/IPoster.sol";
 import { CookieJarFactory } from "src/SummonCookieJar.sol";
 import { BaalCookieJarHarnass } from "test/BaalCookieJar.t.sol";
-import { ERC20CookieJarHarnass } from "test/ERC20CookieJar.t.sol";
-import { ERC721CookieJarHarnass } from "test/ERC721CookieJar.t.sol";
-import { ListCookieJarHarnass } from "test/ListCookieJar.t.sol";
-import { OpenCookieJarHarnass } from "test/OpenCookieJar.t.sol";
+import { ERC20CookieJar } from "src/ERC20CookieJar.sol";
+import { ERC721CookieJar } from "src/ERC721CookieJar.sol";
+import { ListCookieJar } from "src/ListCookieJar.sol";
+import { OpenCookieJar } from "src/OpenCookieJar.sol";
+
+contract ERC20CookieJarHarnass is ERC20CookieJar {
+    function exposed_isAllowList() external view returns (bool) {
+        return isAllowList();
+    }
+}
+
+contract ERC721CookieJarHarnass is ERC721CookieJar {
+    function exposed_isAllowList() external view returns (bool) {
+        return isAllowList();
+    }
+}
+
+contract ListCookieJarHarnass is ListCookieJar {
+    function exposed_isAllowList() external view returns (bool) {
+        return isAllowList();
+    }
+}
+
+contract OpenCookieJarHarnass is OpenCookieJar {
+    function exposed_isAllowList() external pure returns (bool) {
+        return isAllowList();
+    }
+}
 
 contract CloneSummoner is Test {
     CookieJarFactory public cookieJarFactory = new CookieJarFactory();

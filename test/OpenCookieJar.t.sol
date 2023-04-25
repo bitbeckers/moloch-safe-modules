@@ -1,19 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.19 <0.9.0;
 
-import { console2 } from "forge-std/console2.sol";
-import { OpenCookieJar } from "src/OpenCookieJar.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { IPoster } from "src/interfaces/IPoster.sol";
 
-import {CloneSummoner} from "test/utils/Summoner.sol";
-
-contract OpenCookieJarHarnass is OpenCookieJar {
-    function exposed_isAllowList() external pure returns (bool) {
-        return isAllowList();
-    }
-}
+import { CloneSummoner, OpenCookieJarHarnass } from "test/utils/CloneSummoner.sol";
 
 contract OpenCookieJarTest is CloneSummoner {
     address internal alice = makeAddr("alice");
@@ -38,8 +30,7 @@ contract OpenCookieJarTest is CloneSummoner {
         // address _cookieToken,
         bytes memory initParams = abi.encode(address(testAvatar), 3600, cookieAmount, address(cookieToken));
 
-        cookieJar = new OpenCookieJarHarnass();
-        cookieJar.setUp(initParams);
+        cookieJar = getOpenCookieJar(initParams);
 
         // Enable module
         testAvatar.enableModule(address(cookieJar));

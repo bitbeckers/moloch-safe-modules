@@ -9,8 +9,8 @@ import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { IPoster } from "src/interfaces/IPoster.sol";
 
 contract CookieJarHarnass is CookieJar {
-    function setUp(bytes memory _initializationParams) public virtual override initializer {
-        super.setUp(_initializationParams);
+    constructor(bytes memory initParams) {
+        super.setUp(initParams);
     }
 
     function exposed_isAllowList() external returns (bool) {
@@ -41,8 +41,7 @@ contract CookieJarTest is PRBTest, StdCheats {
         // address _cookieToken
         bytes memory initParams = abi.encode(address(testAvatar), 3600, cookieAmount, address(cookieToken));
 
-        cookieJar = new CookieJarHarnass();
-        cookieJar.setUp(initParams);
+        cookieJar = new CookieJarHarnass(initParams);
 
         // Enable module
         testAvatar.enableModule(address(cookieJar));
