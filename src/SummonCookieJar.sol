@@ -6,7 +6,7 @@ import { Clones } from "@openzeppelin/contracts/proxy/Clones.sol";
 import { CookieJar } from "./CookieJar.sol";
 
 contract CookieJarFactory {
-    event SummonCookieJar(address cookieJar, string jarType);
+    event SummonCookieJar(address cookieJar, string jarType, bytes initializer);
 
     /*solhint-disable no-empty-blocks*/
     constructor() { }
@@ -67,6 +67,6 @@ contract CookieJarFactory {
         CookieJar _cookieJar = CookieJar(Clones.clone(_singleton));
         _cookieJar.setUp(_initializer);
 
-        emit SummonCookieJar(address(_cookieJar), _cookieType);
+        emit SummonCookieJar(address(_cookieJar), _cookieType, _initializer);
     }
 }
