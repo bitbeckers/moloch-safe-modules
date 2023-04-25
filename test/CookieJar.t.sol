@@ -11,6 +11,7 @@ import { IPoster } from "src/interfaces/IPoster.sol";
 contract CookieJarHarnass is CookieJar {
     constructor(bytes memory initParams) {
         super.setUp(initParams);
+        posterTag = "poster.test";
     }
 
     function exposed_isAllowList() external returns (bool) {
@@ -33,6 +34,7 @@ contract CookieJarTest is PRBTest, StdCheats {
 
     event Setup(bytes initializationParams);
     event GiveCookie(uint256 amount, uint256 fee);
+    event NewPost(address indexed user, string content, string indexed tag);
 
     function setUp() public virtual {
         // address _safeTarget,
@@ -73,5 +75,20 @@ contract CookieJarTest is PRBTest, StdCheats {
         vm.expectEmit(true, true, false, true);
         emit GiveCookie(cookieAmount, cookieAmount / 100);
         cookieJar.reachInJar(reason);
+    }
+
+    function testAssessReason() external {
+        vm.startPrank(alice);
+        string memory uid = "testEmit";
+
+        vm.expectCall(
+            0x000000000000cd17345801aa8147b8D3950260FF, abi.encodeCall(IPoster.post, ("UP", "poster.test.testEmit"))
+        );
+        cookieJar.assessReason(uid, true);
+
+        vm.expectCall(
+            0x000000000000cd17345801aa8147b8D3950260FF, abi.encodeCall(IPoster.post, ("DOWN", "poster.test.testEmit"))
+        );
+        cookieJar.assessReason(uid, false);
     }
 }
