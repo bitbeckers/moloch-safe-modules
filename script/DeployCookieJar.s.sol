@@ -37,13 +37,14 @@ contract DeployCookieJar is Script {
         listCookieJar = address(new ListCookieJar());
         openCookieJar = address(new OpenCookieJar());
         summonCookieJar = address(new CookieJarFactory());
-
+        // solhint-disable quotes
         console.log('"baalCookieJar": "%s",', baalCookieJar);
         console.log('"erc20CookieJar": "%s",', erc20CookieJar);
         console.log('"erc721CookieJar": "%s",', erc721CookieJar);
         console.log('"listCookieJar": "%s",', listCookieJar);
         console.log('"openCookieJar": "%s",', openCookieJar);
         console.log('"summonCookieJar": "%s",', summonCookieJar);
+        // solhint-enable quotes
 
         vm.stopBroadcast();
     }
