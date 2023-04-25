@@ -90,11 +90,15 @@ abstract contract CookieJar is Module {
         IPoster(posterAddr).post(_reason, posterTag);
     }
 
-    function isAllowList() internal virtual returns (bool) {
+    function canClaim() public view returns (bool allowed) {
+        return isAllowList() && isValidClaimPeriod();
+    }
+
+    function isAllowList() internal view virtual returns (bool) {
         return true;
     }
 
-    function isValidClaimPeriod() private view returns (bool) {
+    function isValidClaimPeriod() internal view returns (bool) {
         return block.timestamp - claims[msg.sender] >= periodLength || claims[msg.sender] == 0;
     }
 }
