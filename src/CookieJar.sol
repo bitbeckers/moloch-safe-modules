@@ -87,7 +87,19 @@ abstract contract CookieJar is Module {
     }
 
     function postReason(string calldata _reason) internal {
-        IPoster(posterAddr).post(_reason, posterTag);
+        bytes32 uid = keccak256(abi.encodePacked(address(this), msg.sender, block.timestamp, _reason));
+        IPoster(posterAddr).post(
+            _reason, string.concat(posterTag, " ", string.concat(posterTag, ".", bytes32ToString(uid)))
+        );
+    }
+
+    function assessReason(string calldata _uid, bool _isGood) public {
+        require(isAllowList(), "not a member");
+        if (_isGood) {
+            IPoster(posterAddr).post("UP", string.concat(posterTag, ".", _uid));
+        } else {
+            IPoster(posterAddr).post("DOWN", string.concat(posterTag, ".", _uid));
+        }
     }
 
     function canClaim() public view returns (bool allowed) {
@@ -100,5 +112,9 @@ abstract contract CookieJar is Module {
 
     function isValidClaimPeriod() internal view returns (bool) {
         return block.timestamp - claims[msg.sender] >= periodLength || claims[msg.sender] == 0;
+    }
+
+    function bytes32ToString(bytes32 _b) private pure returns (string memory) {
+        return string(abi.encodePacked(_b));
     }
 }
