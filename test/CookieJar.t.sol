@@ -13,8 +13,12 @@ contract CookieJarHarnass is CookieJar {
         super.setUp(initParams);
     }
 
-    function exposed_isAllowList() external returns (bool) {
+    function exposed_isAllowList() external view returns (bool) {
         return isAllowList();
+    }
+
+    function exposed_isValidClaimPeriod() external view returns (bool) {
+        return isValidClaimPeriod();
     }
 }
 
@@ -59,6 +63,13 @@ contract CookieJarTest is PRBTest, StdCheats {
         assertTrue(cookieJar.exposed_isAllowList());
     }
 
+    function testCanClaim() external {
+        assertTrue(cookieJar.exposed_isAllowList());
+        assertTrue(cookieJar.exposed_isValidClaimPeriod());
+
+        assertTrue(cookieJar.canClaim());
+    }
+
     function testReachInJar() external {
         // No balance so expect fail
         vm.expectRevert(bytes("call failure setup"));
@@ -70,8 +81,12 @@ contract CookieJarTest is PRBTest, StdCheats {
 
         // Alice puts her hand in the jar
         vm.startPrank(alice);
+        assertTrue(cookieJar.canClaim());
+
         vm.expectEmit(true, true, false, true);
         emit GiveCookie(cookieAmount, cookieAmount / 100);
         cookieJar.reachInJar(reason);
+
+        assertFalse(cookieJar.canClaim());
     }
 }
