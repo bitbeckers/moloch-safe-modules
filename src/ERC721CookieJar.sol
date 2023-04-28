@@ -13,6 +13,7 @@ contract ERC721CookieJar is CookieJar {
 
         super.setUp(_initializationParams);
         erc721Addr = _erc721addr;
+        posterTag = "cookieJar.erc721";
     }
 
     function isAllowList() internal view override returns (bool) {

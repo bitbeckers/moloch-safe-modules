@@ -8,12 +8,12 @@ import { IPoster } from "./interfaces/IPoster.sol";
 
 abstract contract CookieJar is Module {
     uint256 public constant PERC_POINTS = 1e6;
-    string public constant POSTER_TAG = "CookieJar";
-    uint256 public constant SUSTAINABILITY_FEE = 10_000; // 1%
-    address public constant POSTER_ADDR = 0x000000000000cd17345801aa8147b8D3950260FF;
-    address public constant SUSTAINABILITY_ADDR = 0x4A9a27d614a74Ee5524909cA27bdBcBB7eD3b315;
     uint256 public cookieAmount;
+    uint256 public sustainabilityFee;
+    address public sustainabilityAddress;
+    address public posterAddr;
     address public cookieToken;
+    string public posterTag;
     uint256 public periodLength;
 
     mapping(address claimer => uint256 dateTime) public claims;
@@ -36,7 +36,9 @@ abstract contract CookieJar is Module {
 
         // Cookie jar setup
         require(_cookieAmount > PERC_POINTS, "amount too low");
-        
+        sustainabilityFee = 10_000; // 1%
+        posterAddr = 0x000000000000cd17345801aa8147b8D3950260FF;
+        sustainabilityAddress = 0x4A9a27d614a74Ee5524909cA27bdBcBB7eD3b315;
         periodLength = _periodLength;
         cookieAmount = _cookieAmount;
         cookieToken = _cookieToken;
@@ -63,18 +65,18 @@ abstract contract CookieJar is Module {
     }
 
     function giveCookie(address cookieMonster, uint256 amount) private {
-        uint256 fee = (amount / PERC_POINTS) * SUSTAINABILITY_FEE;
+        uint256 fee = (amount / PERC_POINTS) * sustainabilityFee;
         // module exec
 
         if (cookieToken == address(0)) {
-            require(exec(SUSTAINABILITY_ADDR, fee, bytes(""), Enum.Operation.Call), "call failure setup");
+            require(exec(sustainabilityAddress, fee, bytes(""), Enum.Operation.Call), "call failure setup");
             require(exec(cookieMonster, amount - fee, bytes(""), Enum.Operation.Call), "call failure setup");
         } else {
             require(
                 exec(
                     cookieToken,
                     0,
-                    abi.encodeWithSignature("transfer(address,uint256)", abi.encodePacked(SUSTAINABILITY_ADDR, fee)),
+                    abi.encodeWithSignature("transfer(address,uint256)", abi.encodePacked(sustainabilityAddress, fee)),
                     Enum.Operation.Call
                 ),
                 "call failure setup"
@@ -95,18 +97,17 @@ abstract contract CookieJar is Module {
 
     function postReason(string calldata _reason) internal {
         bytes32 uid = keccak256(abi.encodePacked(address(this), msg.sender, block.timestamp, _reason));
-        IPoster(POSTER_ADDR).post(
-            _reason, string.concat(POSTER_TAG, " ", bytes32ToString(uid))
+        IPoster(posterAddr).post(
+            _reason, string.concat(posterTag, " ", string.concat(posterTag, ".", bytes32ToString(uid)))
         );
     }
 
     function assessReason(string calldata _uid, bool _isGood) public {
         require(isAllowList(), "not a member");
-        string memory tag = string.concat(POSTER_TAG, ".reaction");
         if (_isGood) {
-            IPoster(POSTER_ADDR).post(string.concat(_uid, " UP ", msg.sender), tag);
+            IPoster(posterAddr).post("UP", string.concat(posterTag, ".", _uid));
         } else {
-            IPoster(POSTER_ADDR).post(string.concat(_uid, " DOWN ", msg.sender), tag);
+            IPoster(posterAddr).post("DOWN", string.concat(posterTag, ".", _uid));
         }
     }
 

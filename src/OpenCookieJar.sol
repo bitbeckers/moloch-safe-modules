@@ -7,6 +7,7 @@ contract OpenCookieJar is CookieJar {
     function setUp(bytes memory _initializationParams) public virtual override initializer {
         super.setUp(_initializationParams);
 
+        posterTag = "cookiejar.open";
     }
 
     function isAllowList() internal pure override returns (bool) {

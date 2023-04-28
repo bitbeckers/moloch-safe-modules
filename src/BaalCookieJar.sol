@@ -21,6 +21,7 @@ contract BaalCookieJar is CookieJar {
         threshold = _threshold;
         useShares = _useShares;
         useLoot = _useLoot;
+        posterTag = "daohaus.member.database";
     }
 
     function isAllowList() internal view override returns (bool) {
