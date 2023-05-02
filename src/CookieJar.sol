@@ -3,6 +3,7 @@ pragma solidity 0.8.19;
 
 import { Module } from "@gnosis.pm/zodiac/contracts/core/Module.sol";
 import { Enum } from "@gnosis.pm/safe-contracts/contracts/common/Enum.sol";
+import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 import { IPoster } from "./interfaces/IPoster.sol";
 
@@ -100,10 +101,12 @@ abstract contract CookieJar is Module {
 
     function assessReason(string calldata _uid, bool _isGood) public {
         require(isAllowList(), "not a member");
+        string memory tag = string.concat(POSTER_TAG, ".reaction");
+        string memory senderString = Strings.toHexString(uint256(uint160(msg.sender)), 20);
         if (_isGood) {
-            IPoster(POSTER_ADDR).post(string.concat(_uid, " UP ", msg.sender), tag);
+            IPoster(POSTER_ADDR).post(string.concat(_uid, " UP ", senderString), tag);
         } else {
-            IPoster(POSTER_ADDR).post(string.concat(_uid, " DOWN ", msg.sender), tag);
+            IPoster(POSTER_ADDR).post(string.concat(_uid, " DOWN ", senderString), tag);
         }
     }
 

@@ -7,11 +7,11 @@ import { CookieJar } from "src/CookieJar.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { IPoster } from "src/interfaces/IPoster.sol";
+import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract CookieJarHarnass is CookieJar {
     constructor(bytes memory initParams) {
         super.setUp(initParams);
-        posterTag = "poster.test";
     }
 
     function exposed_isAllowList() external view returns (bool) {
@@ -86,14 +86,18 @@ contract CookieJarTest is PRBTest, StdCheats {
     function testAssessReason() external {
         vm.startPrank(alice);
         string memory uid = "testEmit";
+        string memory senderString = Strings.toHexString(uint256(uint160(alice)), 20);
+        string memory tag = string.concat("CookieJar", ".reaction");
 
         vm.expectCall(
-            0x000000000000cd17345801aa8147b8D3950260FF, abi.encodeCall(IPoster.post, ("UP", "poster.test.testEmit"))
+            0x000000000000cd17345801aa8147b8D3950260FF,
+            abi.encodeCall(IPoster.post, (string.concat(uid, " UP ", senderString), tag))
         );
         cookieJar.assessReason(uid, true);
 
         vm.expectCall(
-            0x000000000000cd17345801aa8147b8D3950260FF, abi.encodeCall(IPoster.post, ("DOWN", "poster.test.testEmit"))
+            0x000000000000cd17345801aa8147b8D3950260FF,
+            abi.encodeCall(IPoster.post, (string.concat(uid, " DOWN ", senderString), tag))
         );
         cookieJar.assessReason(uid, false);
     }
