@@ -13,8 +13,6 @@ contract ListCookieJar is CookieJar {
         (,,,, address[] memory _allowList) =
             abi.decode(_initializationParams, (address, uint256, uint256, address, address[]));
 
-        posterTag = "cookieJar.list";
-
         for (uint256 i = 0; i < _allowList.length; i++) {
             allowList[_allowList[i]] = true;
         }

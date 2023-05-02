@@ -17,7 +17,6 @@ contract ERC20CookieJar is CookieJar {
 
         erc20Addr = _erc20addr;
         threshold = _threshold;
-        posterTag = "cookieJar.erc20";
     }
 
     function isAllowList() internal view override returns (bool) {
