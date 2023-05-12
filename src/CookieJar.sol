@@ -5,7 +5,7 @@ import { Module } from "@gnosis.pm/zodiac/contracts/core/Module.sol";
 import { Enum } from "@gnosis.pm/safe-contracts/contracts/common/Enum.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
-import { IPoster } from "./interfaces/IPoster.sol";
+import { IPoster } from "@daohaus/baal-contracts/contracts/interfaces/IPoster.sol";
 
 abstract contract CookieJar is Module {
     uint256 public constant PERC_POINTS = 1e6;

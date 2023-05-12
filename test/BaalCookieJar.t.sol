@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.19 <0.9.0;
 
-import { IBaal } from "src/interfaces/IBaal.sol";
-import { IBaalToken } from "src/interfaces/IBaalToken.sol";
+import { IBaal } from "@daohaus/baal-contracts/contracts/interfaces/IBaal.sol";
+import { IBaalToken } from "@daohaus/baal-contracts/contracts/interfaces/IBaalToken.sol";
 import { BaalCookieJar } from "src/BaalCookieJar.sol";
 import { ERC20 } from "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
-import { IPoster } from "src/interfaces/IPoster.sol";
+import { IPoster } from "@daohaus/baal-contracts/contracts/interfaces/IPoster.sol";
 import { CookieJarFactory } from "src/SummonCookieJar.sol";
 
 import { CloneSummoner } from "test/utils/CloneSummoner.sol";

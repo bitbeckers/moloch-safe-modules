@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.19;
 
-import { IBaalToken } from "./interfaces/IBaalToken.sol";
-import { IBaal } from "./interfaces/IBaal.sol";
+import { IBaalToken } from "@daohaus/baal-contracts/contracts/interfaces/IBaalToken.sol";
+import { IBaal } from "@daohaus/baal-contracts/contracts/interfaces/IBaal.sol";
 import { CookieJar } from "./CookieJar.sol";
 
 contract BaalCookieJar is CookieJar {
