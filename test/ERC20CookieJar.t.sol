@@ -4,7 +4,7 @@ pragma solidity >=0.8.19 <0.9.0;
 import { CloneSummoner, ERC20CookieJarHarnass } from "test/utils/CloneSummoner.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
-import { IPoster } from "src/interfaces/IPoster.sol";
+import { IPoster } from "@daohaus/baal-contracts/contracts/interfaces/IPoster.sol";
 import { ERC20 } from "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 
 contract ERC20CookieJarTest is CloneSummoner {
@@ -24,7 +24,7 @@ contract ERC20CookieJarTest is CloneSummoner {
     string internal reason = "CookieJar: Testing";
 
     event Setup(bytes initializationParams);
-    event GiveCookie(address cookieMonster, uint256 amount, uint256 fee);
+    event GiveCookie(address indexed cookieMonster, uint256 amount, uint256 fee);
 
     function setUp() public virtual {
         // address _safeTarget,

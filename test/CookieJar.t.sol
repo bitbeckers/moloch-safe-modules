@@ -6,7 +6,7 @@ import { StdCheats } from "forge-std/StdCheats.sol";
 import { CookieJar } from "src/CookieJar.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
-import { IPoster } from "src/interfaces/IPoster.sol";
+import { IPoster } from "@daohaus/baal-contracts/contracts/interfaces/IPoster.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract CookieJarHarnass is CookieJar {
@@ -33,7 +33,7 @@ contract CookieJarTest is PRBTest, StdCheats {
     string internal reason = "CookieJar: Testing";
 
     event Setup(bytes initializationParams);
-    event GiveCookie(address cookieMonster, uint256 amount, uint256 fee);
+    event GiveCookie(address indexed cookieMonster, uint256 amount, uint256 fee);
     event NewPost(address indexed user, string content, string indexed tag);
 
     function setUp() public virtual {
