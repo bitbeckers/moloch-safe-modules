@@ -6,7 +6,7 @@ import { StdCheats } from "forge-std/StdCheats.sol";
 import { CookieJar } from "src/CookieJar.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
-import { IPoster } from "src/interfaces/IPoster.sol";
+import { IPoster } from "@daohaus/baal-contracts/contracts/interfaces/IPoster.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract CookieJarHarnass is CookieJar {

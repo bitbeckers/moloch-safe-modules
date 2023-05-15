@@ -3,7 +3,7 @@ pragma solidity >=0.8.19 <0.9.0;
 
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
-import { IPoster } from "src/interfaces/IPoster.sol";
+import { IPoster } from "@daohaus/baal-contracts/contracts/interfaces/IPoster.sol";
 
 import { CloneSummoner, OpenCookieJarHarnass } from "test/utils/CloneSummoner.sol";
 
