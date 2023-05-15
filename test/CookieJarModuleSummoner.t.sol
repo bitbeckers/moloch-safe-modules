@@ -34,27 +34,23 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
         address template,
         bytes memory _initializer,
         uint256 _saltNonce
-    ) internal view returns (address cookieJar) {
+    )
+        internal
+        view
+        returns (address cookieJar)
+    {
         bytes32 salt = keccak256(abi.encodePacked(keccak256(_initializer), _saltNonce));
 
         // This is how ModuleProxyFactory works
-        bytes memory deployment = abi.encodePacked(
-            hex"602d8060093d393df3363d3d373d3d3d363d73",
-            template,
-            hex"5af43d82803e903d91602b57fd5bf3"
-        );
+        bytes memory deployment =
+        //solhint-disable-next-line max-line-length
+         abi.encodePacked(hex"602d8060093d393df3363d3d373d3d3d363d73", template, hex"5af43d82803e903d91602b57fd5bf3");
 
-        bytes32 hash = keccak256(
-            abi.encodePacked(
-                bytes1(0xff),
-                address(moduleProxyFactory),
-                salt,
-                keccak256(deployment)
-            )
-        );
+        bytes32 hash =
+            keccak256(abi.encodePacked(bytes1(0xff), address(moduleProxyFactory), salt, keccak256(deployment)));
 
         // NOTE: cast last 20 bytes of hash to address
-        cookieJar = address(uint160(uint(hash)));
+        cookieJar = address(uint160(uint256(hash)));
     }
 
     function testSummonBaalCookieJar() public {
@@ -64,20 +60,14 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
 
         bytes memory _initializerParams =
             abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken, _dao, _threshold, _useShares, _useLoot);
-        bytes memory _initializer =
-            abi.encodeWithSignature("setUp(bytes)", _initializerParams);
+        bytes memory _initializer = abi.encodeWithSignature("setUp(bytes)", _initializerParams);
 
-        
         string memory details = "BaalCookieJar";
-        uint256 saltNonce = 1234567890;
+        uint256 saltNonce = 1_234_567_890;
 
         cookieJarSummoner.summonCookieJar(_initializer, details, saltNonce);
 
-        address cookieJar = calculateCreate2Address(
-            address(baalCookieJarSingleton),
-            _initializer,
-            saltNonce
-        );
+        address cookieJar = calculateCreate2Address(address(baalCookieJarSingleton), _initializer, saltNonce);
 
         BaalCookieJar baalCookieJar = BaalCookieJar(cookieJar);
 
@@ -99,19 +89,14 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
 
         bytes memory _initializerParams =
             abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken, _mockERC20, _threshold);
-        bytes memory _initializer =
-            abi.encodeWithSignature("setUp(bytes)", _initializerParams);
+        bytes memory _initializer = abi.encodeWithSignature("setUp(bytes)", _initializerParams);
 
         string memory details = "ERC20CookieJar";
-        uint256 saltNonce = 1234567890;
+        uint256 saltNonce = 1_234_567_890;
 
         cookieJarSummoner.summonCookieJar(_initializer, details, saltNonce);
 
-        address cookieJar = calculateCreate2Address(
-            address(erc20CookieJarSingleton),
-            _initializer,
-            saltNonce
-        );
+        address cookieJar = calculateCreate2Address(address(erc20CookieJarSingleton), _initializer, saltNonce);
 
         ERC20CookieJar erc20CookieJar = ERC20CookieJar(cookieJar);
 
@@ -131,19 +116,14 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
 
         bytes memory _initializerParams =
             abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken, _mockERC721);
-        bytes memory _initializer =
-            abi.encodeWithSignature("setUp(bytes)", _initializerParams);
+        bytes memory _initializer = abi.encodeWithSignature("setUp(bytes)", _initializerParams);
 
         string memory details = "ERC721CookieJar";
-        uint256 saltNonce = 1234567890;
+        uint256 saltNonce = 1_234_567_890;
 
         cookieJarSummoner.summonCookieJar(_initializer, details, saltNonce);
 
-        address cookieJar = calculateCreate2Address(
-            address(erc721CookieJarSingleton),
-            _initializer,
-            saltNonce
-        );
+        address cookieJar = calculateCreate2Address(address(erc721CookieJarSingleton), _initializer, saltNonce);
 
         ERC721CookieJar erc721CookieJar = ERC721CookieJar(cookieJar);
 
@@ -164,21 +144,15 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
         _list[0] = makeAddr("alice");
         _list[1] = makeAddr("bob");
 
-        bytes memory _initializerParams =
-            abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken, _list);
-        bytes memory _initializer =
-            abi.encodeWithSignature("setUp(bytes)", _initializerParams);
+        bytes memory _initializerParams = abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken, _list);
+        bytes memory _initializer = abi.encodeWithSignature("setUp(bytes)", _initializerParams);
 
         string memory details = "ListCookieJar";
-        uint256 saltNonce = 1234567890;
+        uint256 saltNonce = 1_234_567_890;
 
         cookieJarSummoner.summonCookieJar(_initializer, details, saltNonce);
 
-        address cookieJar = calculateCreate2Address(
-            address(listCookieJarSingleton),
-            _initializer,
-            saltNonce
-        );
+        address cookieJar = calculateCreate2Address(address(listCookieJarSingleton), _initializer, saltNonce);
 
         ListCookieJar listCookieJar = ListCookieJar(cookieJar);
 
@@ -197,21 +171,15 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
 
         cookieJarSummoner.setAddrs(address(openCookieJarSingleton), address(moduleProxyFactory));
 
-        bytes memory _initializerParams =
-            abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken);
-        bytes memory _initializer =
-            abi.encodeWithSignature("setUp(bytes)", _initializerParams);
+        bytes memory _initializerParams = abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken);
+        bytes memory _initializer = abi.encodeWithSignature("setUp(bytes)", _initializerParams);
 
         string memory details = "OpenCookieJar";
-        uint256 saltNonce = 1234567890;
+        uint256 saltNonce = 1_234_567_890;
 
         cookieJarSummoner.summonCookieJar(_initializer, details, saltNonce);
 
-        address cookieJar = calculateCreate2Address(
-            address(openCookieJarSingleton),
-            _initializer,
-            saltNonce
-        );
+        address cookieJar = calculateCreate2Address(address(openCookieJarSingleton), _initializer, saltNonce);
 
         OpenCookieJar openCookieJar = OpenCookieJar(cookieJar);
 
