@@ -33,7 +33,7 @@ contract CookieJarTest is PRBTest, StdCheats {
     string internal reason = "CookieJar: Testing";
 
     event Setup(bytes initializationParams);
-    event GiveCookie(address cookieMonster, uint256 amount, uint256 fee);
+    event GiveCookie(address indexed cookieMonster, uint256 amount, uint256 fee);
     event NewPost(address indexed user, string content, string indexed tag);
 
     function setUp() public virtual {

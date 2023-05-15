@@ -23,7 +23,7 @@ contract ERC721CookieJarTest is CloneSummoner {
     string internal reason = "CookieJar: Testing";
 
     event Setup(bytes initializationParams);
-    event GiveCookie(address cookieMonster, uint256 amount, uint256 fee);
+    event GiveCookie(address indexed cookieMonster, uint256 amount, uint256 fee);
 
     function setUp() public virtual {
         // address _safeTarget,
