@@ -2,12 +2,12 @@
 pragma solidity >=0.8.19;
 
 import { Script } from "forge-std/Script.sol";
-import { BaalCookieJar } from "../src/BaalCookieJar.sol";
-import { ERC20CookieJar } from "../src/ERC20CookieJar.sol";
-import { ERC721CookieJar } from "../src/ERC721CookieJar.sol";
-import { ListCookieJar } from "../src/ListCookieJar.sol";
-import { OpenCookieJar } from "../src/OpenCookieJar.sol";
-import { CookieJarFactory } from "../src/SummonCookieJar.sol";
+import { BaalCookieJar } from "../src/CookieJarSafeModule/BaalCookieJar.sol";
+import { ERC20CookieJar } from "../src/CookieJarSafeModule/ERC20CookieJar.sol";
+import { ERC721CookieJar } from "../src/CookieJarSafeModule/ERC721CookieJar.sol";
+import { ListCookieJar } from "../src/CookieJarSafeModule/ListCookieJar.sol";
+import { OpenCookieJar } from "../src/CookieJarSafeModule/OpenCookieJar.sol";
+import { CookieJarFactory } from "../src/CookieJarSafeModule/SummonCookieJar.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 
 //import forge console

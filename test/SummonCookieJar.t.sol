@@ -5,12 +5,12 @@ import { PRBTest } from "@prb/test/PRBTest.sol";
 import { console2 } from "forge-std/console2.sol";
 import { StdCheats } from "forge-std/StdCheats.sol";
 
-import { CookieJarFactory } from "src/SummonCookieJar.sol";
-import { BaalCookieJar } from "src/BaalCookieJar.sol";
-import { ERC20CookieJar } from "src/ERC20CookieJar.sol";
-import { ERC721CookieJar } from "src/ERC721CookieJar.sol";
-import { ListCookieJar } from "src/ListCookieJar.sol";
-import { OpenCookieJar } from "src/OpenCookieJar.sol";
+import { CookieJarFactory } from "src/CookieJarSafeModule/SummonCookieJar.sol";
+import { BaalCookieJar } from "src/CookieJarSafeModule/BaalCookieJar.sol";
+import { ERC20CookieJar } from "src/CookieJarSafeModule/ERC20CookieJar.sol";
+import { ERC721CookieJar } from "src/CookieJarSafeModule/ERC721CookieJar.sol";
+import { ListCookieJar } from "src/CookieJarSafeModule/ListCookieJar.sol";
+import { OpenCookieJar } from "src/CookieJarSafeModule/OpenCookieJar.sol";
 
 contract SummonCookieJarTest is PRBTest, StdCheats {
     CookieJarFactory public cookieJarFactory = new CookieJarFactory();
