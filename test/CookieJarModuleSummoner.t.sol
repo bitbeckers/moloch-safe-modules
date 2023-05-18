@@ -7,12 +7,12 @@ import { StdCheats } from "forge-std/StdCheats.sol";
 
 import { ModuleProxyFactory } from "@gnosis.pm/zodiac/contracts/factory/ModuleProxyFactory.sol";
 
-import { CookieJarModuleSummoner } from "src/CookieJarModuleSummoner.sol";
-import { BaalCookieJar } from "src/BaalCookieJar.sol";
-import { ERC20CookieJar } from "src/ERC20CookieJar.sol";
-import { ERC721CookieJar } from "src/ERC721CookieJar.sol";
-import { ListCookieJar } from "src/ListCookieJar.sol";
-import { OpenCookieJar } from "src/OpenCookieJar.sol";
+import { CookieJarModuleSummoner } from "src/CookieJarSafeModule/CookieJarModuleSummoner.sol";
+import { BaalCookieJar } from "src/CookieJarSafeModule/BaalCookieJar.sol";
+import { ERC20CookieJar } from "src/CookieJarSafeModule/ERC20CookieJar.sol";
+import { ERC721CookieJar } from "src/CookieJarSafeModule/ERC721CookieJar.sol";
+import { ListCookieJar } from "src/CookieJarSafeModule/ListCookieJar.sol";
+import { OpenCookieJar } from "src/CookieJarSafeModule/OpenCookieJar.sol";
 
 contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
     CookieJarModuleSummoner public cookieJarSummoner = new CookieJarModuleSummoner();

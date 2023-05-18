@@ -3,7 +3,7 @@ pragma solidity >=0.8.19 <0.9.0;
 
 import { PRBTest } from "@prb/test/PRBTest.sol";
 import { StdCheats } from "forge-std/StdCheats.sol";
-import { CookieJar } from "src/CookieJar.sol";
+import { CookieJar } from "src/CookieJarSafeModule/CookieJar.sol";
 import { TestAvatar } from "@gnosis.pm/zodiac/contracts/test/TestAvatar.sol";
 import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { IPoster } from "@daohaus/baal-contracts/contracts/interfaces/IPoster.sol";

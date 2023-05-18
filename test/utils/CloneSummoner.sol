@@ -2,12 +2,12 @@
 pragma solidity >=0.8.19 <0.9.0;
 
 import { Test, Vm } from "forge-std/Test.sol";
-import { CookieJarFactory } from "src/SummonCookieJar.sol";
+import { CookieJarFactory } from "src/CookieJarSafeModule/SummonCookieJar.sol";
 import { BaalCookieJarHarnass } from "test/BaalCookieJar.t.sol";
-import { ERC20CookieJar } from "src/ERC20CookieJar.sol";
-import { ERC721CookieJar } from "src/ERC721CookieJar.sol";
-import { ListCookieJar } from "src/ListCookieJar.sol";
-import { OpenCookieJar } from "src/OpenCookieJar.sol";
+import { ERC20CookieJar } from "src/CookieJarSafeModule/ERC20CookieJar.sol";
+import { ERC721CookieJar } from "src/CookieJarSafeModule/ERC721CookieJar.sol";
+import { ListCookieJar } from "src/CookieJarSafeModule/ListCookieJar.sol";
+import { OpenCookieJar } from "src/CookieJarSafeModule/OpenCookieJar.sol";
 
 contract ERC20CookieJarHarnass is ERC20CookieJar {
     function exposed_isAllowList() external view returns (bool) {

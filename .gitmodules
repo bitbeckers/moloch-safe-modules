@@ -25,3 +25,9 @@
 [submodule "lib/Baal"]
 	path = lib/Baal
 	url = https://github.com/HausDAO/Baal
+[submodule "lib/sstore2"]
+	path = lib/sstore2
+	url = https://github.com/0xsequence/sstore2
+[submodule "sstore2"]
+	path = sstore2
+	url = https://github.com/0xsequence/sstore2

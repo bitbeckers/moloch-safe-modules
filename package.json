@@ -25,7 +25,7 @@
     "clean": "rimraf cache out",
     "deploy:gnosis": "forge script script/DeployCookieJar.s.sol:DeployCookieJar --broadcast --verify -vvvv --verifier-url https://api.gnosisscan.io/api/ --fork-url gnosis ",
     "lint": "pnpm lint:sol && pnpm prettier:check",
-    "lint:sol": "forge fmt --check && pnpm solhint \"{script,src,test}/**/*.sol\"",
+    "lint:sol": "forge fmt && pnpm solhint \"{script,src,test}/**/*.sol\"",
     "prettier:check": "prettier --check \"**/*.{json,md,yml}\"",
     "prettier:write": "prettier --write \"**/*.{json,md,yml}\""
   }
