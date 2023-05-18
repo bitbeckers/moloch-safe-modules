@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
-
 import { IRegistry } from "../interfaces/IERC6551Registry.sol";
 import { CookieJar6551Factory } from "./CookieJar6551Summoner.sol";
 import { CookieJar6551 } from "./CookieJar6551.sol";
@@ -26,11 +25,13 @@ contract CookieNFT is ERC721 {
     Counters.Counter private _tokenIdCounter;
 
     constructor(
-    address _erc6551Reg,
-    address _erc6551Imp,
-    address _cookieJarFactory,
-    address _cookieJarImp
-    ) ERC721("CookieJar", "COOKIE") { 
+        address _erc6551Reg,
+        address _erc6551Imp,
+        address _cookieJarFactory,
+        address _cookieJarImp
+    )
+        ERC721("CookieJar", "COOKIE")
+    {
         erc6551Reg = _erc6551Reg;
         erc6551Imp = _erc6551Imp;
         cookieJarFactory = _cookieJarFactory;
@@ -51,8 +52,7 @@ contract CookieNFT is ERC721 {
         _tokenIdCounter.increment();
         _mint(address(this), tokenId);
 
-        account =
-            IRegistry(erc6551Reg).createAccount(address(this), tokenId);
+        account = IRegistry(erc6551Reg).createAccount(address(this), tokenId);
         cookieJar = CookieJar6551Factory(cookieJarFactory).summonCookieJar(
             "{\"type\":\"list\", \"title\":\"Cookie NFT\", \"title\":\"Cookie Util NFT\"}",
             cookieJarImp,
@@ -64,8 +64,5 @@ contract CookieNFT is ERC721 {
         CookieJar6551(cookieJar).transferOwnership(account);
 
         IERC721(address(this)).transferFrom(address(this), to, tokenId);
-
     }
-
-
 }

@@ -14,46 +14,28 @@ import { Account } from "src/CookieJarERC6551/ERC6551Module.sol";
 import { MinimalReceiver } from "src/lib/MinimalReceiver.sol";
 import { MinimalProxyStore } from "src/lib/MinimalProxyStore.sol";
 
-
-
 contract AccountRegistryTest is PRBTest {
-
     Account implementation;
     AccountRegistry public accountRegistry;
 
-    event AccountCreated(
-        address account,
-        address indexed tokenContract,
-        uint256 indexed tokenId
-    );
+    event AccountCreated(address account, address indexed tokenContract, uint256 indexed tokenId);
 
     function setUp() public {
         implementation = new Account();
         accountRegistry = new AccountRegistry(address(implementation));
     }
 
-    function testDeployAccount(address tokenCollection, uint256 tokenId)
-        public
-    {
+    function testDeployAccount(address tokenCollection, uint256 tokenId) public {
         assertTrue(address(accountRegistry) != address(0));
 
-        address predictedAccountAddress = accountRegistry.account(
-            tokenCollection,
-            tokenId
-        );
+        address predictedAccountAddress = accountRegistry.account(tokenCollection, tokenId);
 
         vm.expectEmit(true, true, true, true);
         emit AccountCreated(predictedAccountAddress, tokenCollection, tokenId);
-        address accountAddress = accountRegistry.createAccount(
-            tokenCollection,
-            tokenId
-        );
+        address accountAddress = accountRegistry.createAccount(tokenCollection, tokenId);
 
         assertTrue(accountAddress != address(0));
         assertTrue(accountAddress == predictedAccountAddress);
-        assertEq(
-            MinimalProxyStore.getContext(accountAddress),
-            abi.encode(block.chainid, tokenCollection, tokenId)
-        );
+        assertEq(MinimalProxyStore.getContext(accountAddress), abi.encode(block.chainid, tokenCollection, tokenId));
     }
 }

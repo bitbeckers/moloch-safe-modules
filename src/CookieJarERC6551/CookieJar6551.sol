@@ -5,7 +5,6 @@ import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 import { IPoster } from "@daohaus/baal-contracts/contracts/interfaces/IPoster.sol";
 
-
 import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
