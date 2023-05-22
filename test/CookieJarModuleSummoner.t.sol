@@ -67,7 +67,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
         string memory details = "BaalCookieJar";
         uint256 saltNonce = 1_234_567_890;
 
-        cookieJarSummoner.summonCookieJar(baalCookieJarSingleton, _initializer, details, saltNonce);
+        cookieJarSummoner.summonCookieJar(address(baalCookieJarSingleton), _initializer, details, saltNonce);
 
         address cookieJar = _calculateCreate2Address(address(baalCookieJarSingleton), _initializer, saltNonce);
 
@@ -94,7 +94,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
         string memory details = "ERC20CookieJar";
         uint256 saltNonce = 1_234_567_890;
 
-        cookieJarSummoner.summonCookieJar(erc20CookieJarSingleton, _initializer, details, saltNonce);
+        cookieJarSummoner.summonCookieJar(address(erc20CookieJarSingleton), _initializer, details, saltNonce);
 
         address cookieJar = _calculateCreate2Address(address(erc20CookieJarSingleton), _initializer, saltNonce);
 
@@ -119,7 +119,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
         string memory details = "ERC721CookieJar";
         uint256 saltNonce = 1_234_567_890;
 
-        cookieJarSummoner.summonCookieJar(erc721CookieJarSingleton, _initializer, details, saltNonce);
+        cookieJarSummoner.summonCookieJar(address(erc721CookieJarSingleton), _initializer, details, saltNonce);
 
         address cookieJar = _calculateCreate2Address(address(erc721CookieJarSingleton), _initializer, saltNonce);
 
@@ -146,7 +146,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
         string memory details = "ListCookieJar";
         uint256 saltNonce = 1_234_567_890;
 
-        cookieJarSummoner.summonCookieJar(listCookieJarSingleton, _initializer, details, saltNonce);
+        cookieJarSummoner.summonCookieJar(address(listCookieJarSingleton), _initializer, details, saltNonce);
 
         address cookieJar = _calculateCreate2Address(address(listCookieJarSingleton), _initializer, saltNonce);
 
@@ -171,7 +171,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
         string memory details = "OpenCookieJar";
         uint256 saltNonce = 1_234_567_890;
 
-        cookieJarSummoner.summonCookieJar(openCookieJarSingleton, _initializer, details, saltNonce);
+        cookieJarSummoner.summonCookieJar(address(openCookieJarSingleton), _initializer, details, saltNonce);
 
         address cookieJar = _calculateCreate2Address(address(openCookieJarSingleton), _initializer, saltNonce);
 
