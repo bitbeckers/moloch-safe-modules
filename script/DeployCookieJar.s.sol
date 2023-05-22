@@ -27,7 +27,6 @@ contract DeployCookieJar is Script {
     address internal safeModuleSummoner;
     address internal moduleProxyFactory;
 
-
     function setUp() public virtual {
         string memory mnemonic = vm.envString("MNEMONIC");
         if (bytes(mnemonic).length > 0) {
