@@ -7,7 +7,6 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { CookieJar } from "./CookieJar.sol";
 
 contract CookieJarModuleSummoner is Ownable {
-
     ModuleProxyFactory internal moduleProxyFactory;
 
     event SummonCookieJar(address cookieJar, string jarType, bytes initializer);
@@ -72,9 +71,16 @@ contract CookieJarModuleSummoner is Ownable {
         "0x4A9a27d614a74Ee5524909cA27bdBcBB7eD3b315"])
     */
 
-    function summonCookieJar(address _singleton, bytes memory _initializer, string memory details, uint256 _saltNonce) public {
+    function summonCookieJar(
+        address _singleton,
+        bytes memory _initializer,
+        string memory _details,
+        uint256 _saltNonce
+    )
+        public
+    {
         CookieJar _cookieJar = CookieJar(moduleProxyFactory.deployModule(_singleton, _initializer, _saltNonce));
 
-        emit SummonCookieJar(address(_cookieJar), details, _initializer);
+        emit SummonCookieJar(address(_cookieJar), _details, _initializer);
     }
 }
