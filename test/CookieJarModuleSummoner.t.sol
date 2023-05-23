@@ -30,7 +30,11 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
 
     event SummonCookieJar(address cookieJarSingleton, string jarType, bytes initializer, uint256 saltNonce);
 
-    function calculateCreate2Address(
+    function setUp() public virtual {
+        cookieJarSummoner.setAddrs(address(moduleProxyFactory));
+    }
+
+    function _calculateCreate2Address(
         address template,
         bytes memory _initializer,
         uint256 _saltNonce
@@ -56,8 +60,6 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
     function testSummonBaalCookieJar() public {
         BaalCookieJar baalCookieJarSingleton = new BaalCookieJar();
 
-        cookieJarSummoner.setAddrs(address(baalCookieJarSingleton), address(moduleProxyFactory));
-
         bytes memory _initializerParams =
             abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken, _dao, _threshold, _useShares, _useLoot);
         bytes memory _initializer = abi.encodeWithSignature("setUp(bytes)", _initializerParams);
@@ -65,9 +67,9 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
         string memory details = "BaalCookieJar";
         uint256 saltNonce = 1_234_567_890;
 
-        cookieJarSummoner.summonCookieJar(_initializer, details, saltNonce);
+        cookieJarSummoner.summonCookieJar(address(baalCookieJarSingleton), _initializer, details, saltNonce);
 
-        address cookieJar = calculateCreate2Address(address(baalCookieJarSingleton), _initializer, saltNonce);
+        address cookieJar = _calculateCreate2Address(address(baalCookieJarSingleton), _initializer, saltNonce);
 
         BaalCookieJar baalCookieJar = BaalCookieJar(cookieJar);
 
@@ -85,8 +87,6 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
     function testSummonERC20CookieJar() public {
         ERC20CookieJar erc20CookieJarSingleton = new ERC20CookieJar();
 
-        cookieJarSummoner.setAddrs(address(erc20CookieJarSingleton), address(moduleProxyFactory));
-
         bytes memory _initializerParams =
             abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken, _mockERC20, _threshold);
         bytes memory _initializer = abi.encodeWithSignature("setUp(bytes)", _initializerParams);
@@ -94,9 +94,9 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
         string memory details = "ERC20CookieJar";
         uint256 saltNonce = 1_234_567_890;
 
-        cookieJarSummoner.summonCookieJar(_initializer, details, saltNonce);
+        cookieJarSummoner.summonCookieJar(address(erc20CookieJarSingleton), _initializer, details, saltNonce);
 
-        address cookieJar = calculateCreate2Address(address(erc20CookieJarSingleton), _initializer, saltNonce);
+        address cookieJar = _calculateCreate2Address(address(erc20CookieJarSingleton), _initializer, saltNonce);
 
         ERC20CookieJar erc20CookieJar = ERC20CookieJar(cookieJar);
 
@@ -112,8 +112,6 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
     function testSummonERC721CookieJar() public {
         ERC721CookieJar erc721CookieJarSingleton = new ERC721CookieJar();
 
-        cookieJarSummoner.setAddrs(address(erc721CookieJarSingleton), address(moduleProxyFactory));
-
         bytes memory _initializerParams =
             abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken, _mockERC721);
         bytes memory _initializer = abi.encodeWithSignature("setUp(bytes)", _initializerParams);
@@ -121,9 +119,9 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
         string memory details = "ERC721CookieJar";
         uint256 saltNonce = 1_234_567_890;
 
-        cookieJarSummoner.summonCookieJar(_initializer, details, saltNonce);
+        cookieJarSummoner.summonCookieJar(address(erc721CookieJarSingleton), _initializer, details, saltNonce);
 
-        address cookieJar = calculateCreate2Address(address(erc721CookieJarSingleton), _initializer, saltNonce);
+        address cookieJar = _calculateCreate2Address(address(erc721CookieJarSingleton), _initializer, saltNonce);
 
         ERC721CookieJar erc721CookieJar = ERC721CookieJar(cookieJar);
 
@@ -138,8 +136,6 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
     function testSummonListCookieJar() public {
         ListCookieJar listCookieJarSingleton = new ListCookieJar();
 
-        cookieJarSummoner.setAddrs(address(listCookieJarSingleton), address(moduleProxyFactory));
-
         address[] memory _list = new address[](2);
         _list[0] = makeAddr("alice");
         _list[1] = makeAddr("bob");
@@ -150,9 +146,9 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
         string memory details = "ListCookieJar";
         uint256 saltNonce = 1_234_567_890;
 
-        cookieJarSummoner.summonCookieJar(_initializer, details, saltNonce);
+        cookieJarSummoner.summonCookieJar(address(listCookieJarSingleton), _initializer, details, saltNonce);
 
-        address cookieJar = calculateCreate2Address(address(listCookieJarSingleton), _initializer, saltNonce);
+        address cookieJar = _calculateCreate2Address(address(listCookieJarSingleton), _initializer, saltNonce);
 
         ListCookieJar listCookieJar = ListCookieJar(cookieJar);
 
@@ -169,17 +165,15 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
     function testSummonOpenCookieJar() public {
         OpenCookieJar openCookieJarSingleton = new OpenCookieJar();
 
-        cookieJarSummoner.setAddrs(address(openCookieJarSingleton), address(moduleProxyFactory));
-
         bytes memory _initializerParams = abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken);
         bytes memory _initializer = abi.encodeWithSignature("setUp(bytes)", _initializerParams);
 
         string memory details = "OpenCookieJar";
         uint256 saltNonce = 1_234_567_890;
 
-        cookieJarSummoner.summonCookieJar(_initializer, details, saltNonce);
+        cookieJarSummoner.summonCookieJar(address(openCookieJarSingleton), _initializer, details, saltNonce);
 
-        address cookieJar = calculateCreate2Address(address(openCookieJarSingleton), _initializer, saltNonce);
+        address cookieJar = _calculateCreate2Address(address(openCookieJarSingleton), _initializer, saltNonce);
 
         OpenCookieJar openCookieJar = OpenCookieJar(cookieJar);
 

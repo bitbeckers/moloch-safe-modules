@@ -140,7 +140,7 @@ Deploy to Anvil:
 $ forge script script/DeployFoo.s.sol --broadcast --fork-url http://localhost:8545
 ```
 
-For this script to work, you need to have a `MNEMONIC` environment variable set to a valid
+For this script to work, you need to have a `MNEMONIC` or `PRIVATE_KEY` environment variable set to a valid
 [BIP39 mnemonic](https://iancoleman.io/bip39/).
 
 For instructions on how to deploy to a testnet or mainnet, check out the
