@@ -14,8 +14,8 @@ contract CookieJarHarnass is CookieJar {
         super.setUp(initParams);
     }
 
-    function exposed_isAllowList() external view returns (bool) {
-        return isAllowList();
+    function exposed_isAllowList(address user) external view returns (bool) {
+        return isAllowList(user);
     }
 }
 
@@ -58,11 +58,11 @@ contract CookieJarTest is PRBTest, StdCheats {
     }
 
     function testIsAllowList() external {
-        assertTrue(cookieJar.exposed_isAllowList());
+        assertTrue(cookieJar.exposed_isAllowList(msg.sender));
     }
 
     function testCanClaim() external {
-        assertTrue(cookieJar.canClaim());
+        assertTrue(cookieJar.canClaim(msg.sender));
     }
 
     function testReachInJar() external {
@@ -76,11 +76,11 @@ contract CookieJarTest is PRBTest, StdCheats {
 
         // Alice puts her hand in the jar
         vm.startPrank(alice);
-        assertTrue(cookieJar.canClaim());
+        assertTrue(cookieJar.canClaim(alice));
         vm.expectEmit(true, true, false, true);
         emit GiveCookie(alice, cookieAmount, cookieAmount / 100);
         cookieJar.reachInJar(reason);
-        assertFalse(cookieJar.canClaim());
+        assertFalse(cookieJar.canClaim(alice));
     }
 
     function testAssessReason() external {
@@ -108,10 +108,10 @@ contract CookieJarTest is PRBTest, StdCheats {
 
         // Alice puts her hand in the jar
         vm.startPrank(alice);
-        assertTrue(cookieJar.canClaim());
+        assertTrue(cookieJar.canClaim(alice));
         vm.expectEmit(true, true, false, true);
         emit GiveCookie(bob, cookieAmount, cookieAmount / 100);
         cookieJar.reachInJar(bob, reason);
-        assertFalse(cookieJar.canClaim());
+        assertFalse(cookieJar.canClaim(alice));
     }
 }

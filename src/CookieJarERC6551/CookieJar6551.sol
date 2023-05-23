@@ -89,8 +89,8 @@ abstract contract CookieJar6551 is Initializable, OwnableUpgradeable {
      * @param _reason The reason provided by the member for making the claim. This will be posted publicly.
      */
     function reachInJar(string calldata _reason) public {
-        require(isAllowList(), "not a member");
-        require(isValidClaimPeriod(), "not a valid claim period");
+        require(isAllowList(msg.sender), "not a member");
+        require(isValidClaimPeriod(msg.sender), "not a valid claim period");
 
         claims[msg.sender] = block.timestamp;
         giveCookie(msg.sender, cookieAmount);
@@ -107,8 +107,8 @@ abstract contract CookieJar6551 is Initializable, OwnableUpgradeable {
      * @param _reason The reason provided by the member for making the claim. This will be posted publicly.
      */
     function reachInJar(address cookieMonster, string calldata _reason) public {
-        require(isAllowList(), "not a member");
-        require(isValidClaimPeriod(), "not a valid claim period");
+        require(isAllowList(msg.sender), "not a member");
+        require(isValidClaimPeriod(msg.sender), "not a valid claim period");
 
         claims[msg.sender] = block.timestamp;
         giveCookie(cookieMonster, cookieAmount);
@@ -164,7 +164,7 @@ abstract contract CookieJar6551 is Initializable, OwnableUpgradeable {
      * @param _isGood A boolean indicating whether the assessment is positive (true) or negative (false).
      */
     function assessReason(string calldata _uid, bool _isGood) public {
-        require(isAllowList(), "not a member");
+        require(isAllowList(msg.sender), "not a member");
         string memory tag = string.concat(POSTER_TAG, ".reaction");
         string memory senderString = Strings.toHexString(uint256(uint160(msg.sender)), 20);
         if (_isGood) {
@@ -180,8 +180,8 @@ abstract contract CookieJar6551 is Initializable, OwnableUpgradeable {
      * valid claim period.
      * @return allowed A boolean indicating whether the caller is eligible to make a claim.
      */
-    function canClaim() public view returns (bool allowed) {
-        return isAllowList() && isValidClaimPeriod();
+    function canClaim(address user) public view returns (bool allowed) {
+        return isAllowList(user) && isValidClaimPeriod(user);
     }
 
     /**
@@ -189,7 +189,7 @@ abstract contract CookieJar6551 is Initializable, OwnableUpgradeable {
      * @dev Always returns true in this contract, but is expected to be overridden in a derived contract.
      * @return A boolean indicating whether the caller is a member.
      */
-    function isAllowList() internal view virtual returns (bool) {
+    function isAllowList(address user) internal view virtual returns (bool) {
         return true;
     }
 
@@ -199,8 +199,8 @@ abstract contract CookieJar6551 is Initializable, OwnableUpgradeable {
      * or if the caller has not made a claim yet (i.e., their last claim time is zero).
      * @return A boolean indicating whether the claim period for the caller is valid.
      */
-    function isValidClaimPeriod() internal view returns (bool) {
-        return block.timestamp - claims[msg.sender] >= periodLength || claims[msg.sender] == 0;
+    function isValidClaimPeriod(address user) internal view returns (bool) {
+        return block.timestamp - claims[user] >= periodLength || claims[user] == 0;
     }
 
     /**

@@ -10,26 +10,26 @@ import { ListCookieJar } from "src/CookieJarSafeModule/ListCookieJar.sol";
 import { OpenCookieJar } from "src/CookieJarSafeModule/OpenCookieJar.sol";
 
 contract ERC20CookieJarHarnass is ERC20CookieJar {
-    function exposed_isAllowList() external view returns (bool) {
-        return isAllowList();
+    function exposed_isAllowList(address user) external view returns (bool) {
+        return isAllowList(user);
     }
 }
 
 contract ERC721CookieJarHarnass is ERC721CookieJar {
-    function exposed_isAllowList() external view returns (bool) {
-        return isAllowList();
+    function exposed_isAllowList(address user) external view returns (bool) {
+        return isAllowList(user);
     }
 }
 
 contract ListCookieJarHarnass is ListCookieJar {
-    function exposed_isAllowList() external view returns (bool) {
-        return isAllowList();
+    function exposed_isAllowList(address user) external view returns (bool) {
+        return isAllowList(user);
     }
 }
 
 contract OpenCookieJarHarnass is OpenCookieJar {
-    function exposed_isAllowList() external pure returns (bool) {
-        return isAllowList();
+    function exposed_isAllowList(address user) external view returns (bool) {
+        return isAllowList(user);
     }
 }
 

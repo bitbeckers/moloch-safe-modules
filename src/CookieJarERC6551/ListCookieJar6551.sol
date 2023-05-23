@@ -18,8 +18,8 @@ contract ListCookieJar6551 is CookieJar6551 {
         }
     }
 
-    function isAllowList() internal view override returns (bool) {
-        return allowList[msg.sender];
+    function isAllowList(address user) internal view override returns (bool) {
+        return allowList[user];
     }
 
     function setAllowList(address _address, bool _isAllowed) external onlyOwner {

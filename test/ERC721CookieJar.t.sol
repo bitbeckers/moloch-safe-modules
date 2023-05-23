@@ -44,10 +44,10 @@ contract ERC721CookieJarTest is CloneSummoner {
     }
 
     function testIsAllowed() external {
-        assertFalse(cookieJar.exposed_isAllowList());
+        assertFalse(cookieJar.exposed_isAllowList(msg.sender));
 
         vm.mockCall(address(gatingERC721), abi.encodeWithSelector(ERC721.balanceOf.selector), abi.encode(true));
-        assertTrue(cookieJar.exposed_isAllowList());
+        assertTrue(cookieJar.exposed_isAllowList(msg.sender));
     }
 
     function testReachInJar() external {

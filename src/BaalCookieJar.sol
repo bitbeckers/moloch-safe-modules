@@ -23,14 +23,14 @@ contract BaalCookieJar is CookieJar {
         useLoot = _useLoot;
     }
 
-    function isAllowList() internal view override returns (bool) {
+    function isAllowList(address user) internal view override returns (bool) {
         if (useShares && useLoot) {
-            return IBaalToken(IBaal(dao).sharesToken()).balanceOf(msg.sender) >= threshold
-                || IBaalToken(IBaal(dao).lootToken()).balanceOf(msg.sender) >= threshold;
+            return IBaalToken(IBaal(dao).sharesToken()).balanceOf(user) >= threshold
+                || IBaalToken(IBaal(dao).lootToken()).balanceOf(user) >= threshold;
         }
         if (useLoot) {
-            return IBaalToken(IBaal(dao).lootToken()).balanceOf(msg.sender) >= threshold;
+            return IBaalToken(IBaal(dao).lootToken()).balanceOf(user) >= threshold;
         }
-        return IBaalToken(IBaal(dao).sharesToken()).balanceOf(msg.sender) >= threshold;
+        return IBaalToken(IBaal(dao).sharesToken()).balanceOf(user) >= threshold;
     }
 }

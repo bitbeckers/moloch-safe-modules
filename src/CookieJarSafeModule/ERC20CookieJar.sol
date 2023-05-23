@@ -19,7 +19,7 @@ contract ERC20CookieJar is CookieJar {
         threshold = _threshold;
     }
 
-    function isAllowList() internal view override returns (bool) {
-        return IERC20(erc20Addr).balanceOf(msg.sender) >= threshold;
+    function isAllowList(address user) internal view override returns (bool) {
+        return IERC20(erc20Addr).balanceOf(user) >= threshold;
     }
 }

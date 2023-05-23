@@ -18,7 +18,7 @@ contract ListCookieJar is CookieJar {
         }
     }
 
-    function isAllowList() internal view override returns (bool) {
-        return allowList[msg.sender];
+    function isAllowList(address user) internal view override returns (bool) {
+        return allowList[user];
     }
 }

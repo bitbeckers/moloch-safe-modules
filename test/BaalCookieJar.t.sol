@@ -13,8 +13,8 @@ import { CookieJarFactory } from "src/CookieJarSafeModule/SummonCookieJar.sol";
 import { CloneSummoner } from "test/utils/CloneSummoner.sol";
 
 contract BaalCookieJarHarnass is BaalCookieJar {
-    function exposed_isAllowList() external view returns (bool) {
-        return isAllowList();
+    function exposed_isAllowList(address user) external view returns (bool) {
+        return isAllowList(user);
     }
 }
 
@@ -63,10 +63,10 @@ contract BaalCookieJarTest is CloneSummoner {
 
     function testIdentifyMolochMember() external {
         vm.expectRevert();
-        cookieJar.exposed_isAllowList();
+        cookieJar.exposed_isAllowList(msg.sender);
 
         vm.mockCall(address(sharesToken), abi.encodeWithSelector(IBaalToken.balanceOf.selector), abi.encode(1));
-        assertTrue(cookieJar.exposed_isAllowList());
+        assertTrue(cookieJar.exposed_isAllowList(msg.sender));
     }
 
     function testReachInJar() external {

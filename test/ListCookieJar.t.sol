@@ -45,10 +45,9 @@ contract ListCookieJarTest is CloneSummoner {
     }
 
     function testIsAllowed() external {
-        assertFalse(cookieJar.exposed_isAllowList());
+        assertFalse(cookieJar.exposed_isAllowList(msg.sender));
 
-        vm.startPrank(alice);
-        assertTrue(cookieJar.exposed_isAllowList());
+        assertTrue(cookieJar.exposed_isAllowList(alice));
     }
 
     function testReachInJar() external {

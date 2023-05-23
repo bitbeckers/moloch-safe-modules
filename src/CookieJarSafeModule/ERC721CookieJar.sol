@@ -15,7 +15,7 @@ contract ERC721CookieJar is CookieJar {
         erc721Addr = _erc721addr;
     }
 
-    function isAllowList() internal view override returns (bool) {
-        return IERC721(erc721Addr).balanceOf(msg.sender) > 0;
+    function isAllowList(address user) internal view override returns (bool) {
+        return IERC721(erc721Addr).balanceOf(user) > 0;
     }
 }

@@ -8,7 +8,7 @@ contract OpenCookieJar is CookieJar {
         super.setUp(_initializationParams);
     }
 
-    function isAllowList() internal pure override returns (bool) {
+    function isAllowList(address user) internal pure override returns (bool) {
         return true;
     }
 }

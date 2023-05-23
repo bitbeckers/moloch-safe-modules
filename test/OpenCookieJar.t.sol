@@ -40,7 +40,7 @@ contract OpenCookieJarTest is CloneSummoner {
 
     function testIsAllowList() external {
         //Always true for OpenCookieJar
-        assertTrue(cookieJar.exposed_isAllowList());
+        assertTrue(cookieJar.exposed_isAllowList(msg.sender));
     }
 
     function testReachInJar() external {
