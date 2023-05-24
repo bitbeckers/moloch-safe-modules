@@ -38,7 +38,7 @@ contract CookieJarFactory is Ownable {
         emit SummonCookieJar(address(cookieJar), details, initializer);
 
         //TODO do we need to return the address?
-        return address(cookieJar);
+        return address(cookieJar)
     }
 
     // todo: use the proxy factory to deploy jars
