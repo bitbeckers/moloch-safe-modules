@@ -29,12 +29,15 @@ contract CookieJarFactory is Ownable {
         public
         returns (address)
     {
+        //TODO CookieJarCore can be an interface
         CookieJarCore cookieJar = CookieJarCore(Clones.clone(singleton));
         cookieJar.setUp(initializer);
 
         CookieJarCore(cookieJar).transferOwnership(msg.sender);
 
         emit SummonCookieJar(address(cookieJar), details, initializer);
+
+        //TODO do we need to return the address?
         return address(cookieJar);
     }
 
