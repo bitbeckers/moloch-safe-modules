@@ -39,7 +39,6 @@ contract AccountTest is PRBTest {
 
     function setUp() public {
         implementation = new AccountERC6551();
-        implementation = new AccountERC6551();
         accountRegistry = new AccountRegistry(address(implementation));
         tokenCollection = new MockERC721();
     }
