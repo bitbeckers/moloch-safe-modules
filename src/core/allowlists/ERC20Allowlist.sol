@@ -3,15 +3,11 @@ pragma solidity 0.8.19;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import { CookieJar } from "./CookieJar.sol";
-
-contract ERC20CookieJar is CookieJar {
+contract ERC20Allowlist {
     address public erc20Addr;
     uint256 public threshold;
 
-    function setUp(bytes memory _initializationParams) public override initializer {
-        super.setUp(_initializationParams);
-
+    function setUpAllowlist(bytes memory _initializationParams) public {
         (,,,, address _erc20addr, uint256 _threshold) =
             abi.decode(_initializationParams, (address, uint256, uint256, address, address, uint256));
 
@@ -19,7 +15,7 @@ contract ERC20CookieJar is CookieJar {
         threshold = _threshold;
     }
 
-    function isAllowList(address user) internal view override returns (bool) {
+    function _isAllowList(address user) internal view returns (bool) {
         return IERC20(erc20Addr).balanceOf(user) >= threshold;
     }
 }

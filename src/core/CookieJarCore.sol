@@ -1,27 +1,18 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.19;
 
-import { Module } from "@gnosis.pm/zodiac/contracts/core/Module.sol";
-import { Enum } from "@gnosis.pm/safe-contracts/contracts/common/Enum.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
-
+import { ICookieJar } from "src/interfaces/ICookieJar.sol";
+import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { IPoster } from "@daohaus/baal-contracts/contracts/interfaces/IPoster.sol";
 
-abstract contract CookieJar is Module {
-    /// @notice The constant that represents percentage points for calculations.
-    uint256 public constant PERC_POINTS = 1e6;
-
+abstract contract CookieJarCore is Initializable, OwnableUpgradeable, ICookieJar {
     /// @notice The tag used for posts related to this contract.
     string public constant POSTER_TAG = "CookieJar";
 
-    /// @notice The fee charged on each transaction, set at 1% (10,000 out of a million).
-    uint256 public constant SUSTAINABILITY_FEE = 10_000;
-
     /// @notice The address for the poster.
     address public constant POSTER_ADDR = 0x000000000000cd17345801aa8147b8D3950260FF;
-
-    /// @notice The address for the sustainability fee.
-    address public constant SUSTAINABILITY_ADDR = 0x4A9a27d614a74Ee5524909cA27bdBcBB7eD3b315;
 
     /// @notice The amount of "cookie" that can be claimed.
     uint256 public cookieAmount;
@@ -35,21 +26,6 @@ abstract contract CookieJar is Module {
     // @notice The claiming address and the timestamp of the last claim.
     mapping(address claimer => uint256 dateTime) public claims;
 
-    /// @dev Emitted when the contract is set up.
-    /// @param initializationParams The parameters used for initialization.
-    event Setup(bytes initializationParams);
-
-    /// @dev Emitted when a "cookie" is given to an address.
-    /// @param cookieMonster The address receiving the cookie.
-    /// @param amount The amount of cookie given.
-    /// @param fee The fee deducted from the amount.
-    event GiveCookie(address indexed cookieMonster, uint256 amount, uint256 fee);
-
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
-
     /**
      * @notice Sets up the contract with the given initialization parameters.
      * @dev The initialization parameters are decoded from a bytes array into the Safe target, period length, cookie
@@ -60,21 +36,17 @@ abstract contract CookieJar is Module {
      * The period length, cookie amount, and cookie token are then set as per the parameters.
      * An event is emitted with the initialization parameters.
      * @param _initializationParams The initialization parameters, encoded as a bytes array.
+     *  // TODO: add initializer to this contract
      */
-    function setUp(bytes memory _initializationParams) public virtual override {
-        (address _safeTarget, uint256 _periodLength, uint256 _cookieAmount, address _cookieToken) =
+    function setUp(bytes memory _initializationParams) public virtual {
+        (, uint256 _periodLength, uint256 _cookieAmount, address _cookieToken) =
             abi.decode(_initializationParams, (address, uint256, uint256, address));
 
-        // Module setup
-        avatar = _safeTarget;
-        target = _safeTarget;
-
-        // Cookie jar setup
-        require(_cookieAmount > PERC_POINTS, "amount too low");
-        // require(_cookieAmount % PERC_POINTS == 0, "No crumbs allowed");
         periodLength = _periodLength;
         cookieAmount = _cookieAmount;
         cookieToken = _cookieToken;
+
+        __Ownable_init();
 
         emit Setup(_initializationParams);
     }
@@ -87,7 +59,7 @@ abstract contract CookieJar is Module {
      * This function can only be called by the member themselves, and not on behalf of others.
      * @param _reason The reason provided by the member for making the claim. This will be posted publicly.
      */
-    function reachInJar(string calldata _reason) public {
+    function reachInJar(string calldata _reason) public virtual {
         require(isAllowList(msg.sender), "not a member");
         require(isValidClaimPeriod(msg.sender), "not a valid claim period");
 
@@ -105,7 +77,7 @@ abstract contract CookieJar is Module {
      * @param cookieMonster The address to receive the cookie.
      * @param _reason The reason provided by the member for making the claim. This will be posted publicly.
      */
-    function reachInJar(address cookieMonster, string calldata _reason) public {
+    function reachInJar(address cookieMonster, string calldata _reason) public virtual {
         require(isAllowList(msg.sender), "not a member");
         require(isValidClaimPeriod(msg.sender), "not a valid claim period");
 
@@ -121,48 +93,7 @@ abstract contract CookieJar is Module {
      * @param cookieMonster The address to receive the cookie.
      * @param amount The amount of cookie to be transferred.
      */
-    function giveCookie(address cookieMonster, uint256 amount) private {
-        uint256 fee = (amount / PERC_POINTS) * SUSTAINABILITY_FEE;
-
-        // module exec
-
-        if (cookieToken == address(0)) {
-            require(exec(SUSTAINABILITY_ADDR, fee, bytes(""), Enum.Operation.Call), "call failure setup");
-            require(exec(cookieMonster, amount - fee, bytes(""), Enum.Operation.Call), "call failure setup");
-        } else {
-            require(
-                exec(
-                    cookieToken,
-                    0,
-                    abi.encodeWithSignature("transfer(address,uint256)", abi.encodePacked(SUSTAINABILITY_ADDR, fee)),
-                    Enum.Operation.Call
-                ),
-                "call failure setup"
-            );
-
-            require(
-                exec(
-                    cookieToken,
-                    0,
-                    abi.encodeWithSignature("transfer(address,uint256)", abi.encodePacked(cookieMonster, amount - fee)),
-                    Enum.Operation.Call
-                ),
-                "call failure setup"
-            );
-        }
-        emit GiveCookie(cookieMonster, amount, fee);
-    }
-
-    /**
-     * @notice Posts the reason for a claim.
-     * @dev Generates a unique identifier (uid) for the post using keccak256. Then, it calls the post function of the
-     * Poster contract.
-     * @param _reason The reason provided by the member for making the claim.
-     */
-    function postReason(string calldata _reason) internal {
-        bytes32 uid = keccak256(abi.encodePacked(address(this), msg.sender, block.timestamp, _reason));
-        IPoster(POSTER_ADDR).post(_reason, string.concat(POSTER_TAG, " ", bytes32ToString(uid)));
-    }
+    function giveCookie(address cookieMonster, uint256 amount) internal virtual { }
 
     /**
      * @notice Allows a member to assess the reason for a claim.
@@ -193,6 +124,12 @@ abstract contract CookieJar is Module {
     }
 
     /**
+     *
+     * INTERNAL  *
+     *
+     */
+
+    /**
      * @notice Checks if the caller is a member.
      * @dev Always returns true in this contract, but is expected to be overridden in a derived contract.
      * @return A boolean indicating whether the caller is a member.
@@ -212,6 +149,23 @@ abstract contract CookieJar is Module {
     }
 
     /**
+     * @notice Posts the reason for a claim.
+     * @dev Generates a unique identifier (uid) for the post using keccak256. Then, it calls the post function of the
+     * Poster contract.
+     * @param _reason The reason provided by the member for making the claim.
+     */
+    function postReason(string calldata _reason) internal {
+        bytes32 uid = keccak256(abi.encodePacked(address(this), msg.sender, block.timestamp, _reason));
+        IPoster(POSTER_ADDR).post(_reason, string.concat(POSTER_TAG, " ", bytes32ToString(uid)));
+    }
+
+    /**
+     *
+     * UTIL *
+     *
+     */
+
+    /**
      * @notice Converts a bytes32 value to a string.
      * @dev This is a helper function that is used to convert bytes32 values to strings, for example, to convert hashed
      * values
@@ -221,5 +175,23 @@ abstract contract CookieJar is Module {
      */
     function bytes32ToString(bytes32 _b) private pure returns (string memory) {
         return string(abi.encodePacked(_b));
+    }
+
+    /**
+     *
+     * CONFIG *
+     *
+     */
+    /**
+     * @notice Allows owner to change congiguration.
+     * @dev Checks if the caller is a member and if the claim period is valid. If the requirements are met,
+     * @param _periodLength The length of the period between claims.
+     * @param _cookieAmount The amount of "cookie" that can be claimed.
+     * @param _cookieToken The address of the token that is being distributed, zero address for native.
+     */
+    function setConfig(uint256 _periodLength, uint256 _cookieAmount, address _cookieToken) public virtual onlyOwner {
+        periodLength = _periodLength;
+        cookieAmount = _cookieAmount;
+        cookieToken = _cookieToken;
     }
 }

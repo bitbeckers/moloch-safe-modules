@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.19;
 
-import "../interfaces/IERC6551Registry.sol";
-import "../lib/MinimalProxyStore.sol";
+import "src/interfaces/IERC6551Registry.sol";
+import "src/lib/MinimalProxyStore.sol";
 import "./ERC6551Registry.sol";
 
 /**

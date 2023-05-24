@@ -8,10 +8,12 @@ import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
-import "../lib/MinimalReceiver.sol";
-import { IAccount } from "../interfaces/IERC6551.sol";
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-import "../lib/MinimalProxyStore.sol";
+import "src/lib/MinimalReceiver.sol";
+import { IAccount } from "src/interfaces/IERC6551.sol";
+
+import "src/lib/MinimalProxyStore.sol";
 
 import "forge-std/console.sol";
 
@@ -19,7 +21,7 @@ import "forge-std/console.sol";
  * @title A smart contract wallet owned by a single ERC721 token
  * @author Jayden Windle (jaydenwindle)
  */
-contract Account is IERC165, IERC1271, IAccount, MinimalReceiver {
+contract AccountERC6551 is IERC165, IERC1271, IAccount, MinimalReceiver, Initializable {
     error NotAuthorized();
     error AccountLocked();
     error ExceedsMaxLockTime();
@@ -123,6 +125,13 @@ contract Account is IERC165, IERC1271, IAccount, MinimalReceiver {
         address _owner = owner();
         if (_owner != msg.sender) revert NotAuthorized();
 
+        executor[_owner] = _executionModule;
+
+        emit ExecutorUpdated(_owner, _executionModule);
+    }
+
+    function setExecutorInit(address _executionModule) external onlyUnlocked initializer {
+        address _owner = owner();
         executor[_owner] = _executionModule;
 
         emit ExecutorUpdated(_owner, _executionModule);
