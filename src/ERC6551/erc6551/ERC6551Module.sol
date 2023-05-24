@@ -12,7 +12,7 @@ import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/I
 
 
 import "src/lib/MinimalReceiver.sol";
-import { IAccount } from "src/CookieJarERC6551/interfaces/IERC6551.sol";
+import { IAccount } from "src/interfaces/IERC6551.sol";
 
 import "src/lib/MinimalProxyStore.sol";
 

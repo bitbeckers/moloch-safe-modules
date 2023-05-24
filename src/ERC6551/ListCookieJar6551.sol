@@ -2,20 +2,13 @@
 pragma solidity 0.8.19;
 
 import { CookieJar6551 } from "./CookieJar6551.sol";
+import { MappedAllowlist } from "src/core/allowlists/MappedAllowlist.sol";
 
-contract ListCookieJar6551 is CookieJar6551 {
-    address public safeTarget;
-    mapping(address allowed => bool isAllowed) public allowList;
-
+contract ListCookieJar6551 is MappedAllowlist, CookieJar6551 {
     function setUp(bytes memory _initializationParams) public override initializer {
         super.setUp(_initializationParams);
 
-        (,,,, address[] memory _allowList) =
-            abi.decode(_initializationParams, (address, uint256, uint256, address, address[]));
-
-        for (uint256 i = 0; i < _allowList.length; i++) {
-            allowList[_allowList[i]] = true;
-        }
+        MappedAllowlist.setUp(_initializationParams);
     }
 
     function isAllowList(address user) internal view override returns (bool) {
@@ -24,5 +17,9 @@ contract ListCookieJar6551 is CookieJar6551 {
 
     function setAllowList(address _address, bool _isAllowed) external onlyOwner {
         allowList[_address] = _isAllowed;
+    }
+
+    function batchAllowList(address[] memory _addresses, bool[] memory _isAllowed) external onlyOwner {
+        MappedAllowlist.batchAllowList(_addresses, _isAllowed);
     }
 }

@@ -6,12 +6,12 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
-import { IRegistry } from "src/CookieJarERC6551/interfaces/IERC6551Registry.sol";
+import { IRegistry } from "src/interfaces/IERC6551Registry.sol";
 import { CookieJarFactory } from "src/factory/CookieJarFactory.sol";
 import { CookieJarCore } from "src/core/CookieJarCore.sol";
 
-import { AccountERC6551 } from "src/CookieJarERC6551/erc6551/ERC6551Module.sol";
-import { IAccount } from "src/CookieJarERC6551/interfaces/IERC6551.sol";
+import { AccountERC6551 } from "src/ERC6551/erc6551/ERC6551Module.sol";
+import { IAccount } from "src/interfaces/IERC6551.sol";
 import { MinimalReceiver } from "src/lib/MinimalReceiver.sol";
 
 contract CookieNFT is ERC721 {
@@ -24,11 +24,7 @@ contract CookieNFT is ERC721 {
 
     Counters.Counter private _tokenIdCounter;
 
-    event AccountCreated(
-        address account, 
-        address indexed cookieJar, 
-        uint256 indexed tokenId
-        );
+    event AccountCreated(address account, address indexed cookieJar, uint256 indexed tokenId);
 
     constructor(
         address _erc6551Reg,
@@ -57,7 +53,6 @@ contract CookieNFT is ERC721 {
         tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _mint(to, tokenId);
-
 
         account = IRegistry(erc6551Reg).createAccount(address(this), tokenId);
         cookieJar = CookieJarFactory(cookieJarSummoner).summonCookieJar(

@@ -6,8 +6,9 @@ import { Enum } from "@gnosis.pm/safe-contracts/contracts/common/Enum.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 import { IPoster } from "@daohaus/baal-contracts/contracts/interfaces/IPoster.sol";
+import { CookieJarCore } from "src/core/CookieJarCore.sol";
 
-abstract contract CookieJar is Module {
+abstract contract ZodiacCookieJar is GiverZodiac, CookieJarCore {
     /// @notice The constant that represents percentage points for calculations.
     uint256 public constant PERC_POINTS = 1e6;
 
@@ -122,35 +123,7 @@ abstract contract CookieJar is Module {
      * @param amount The amount of cookie to be transferred.
      */
     function giveCookie(address cookieMonster, uint256 amount) private {
-        uint256 fee = (amount / PERC_POINTS) * SUSTAINABILITY_FEE;
-
-        // module exec
-
-        if (cookieToken == address(0)) {
-            require(exec(SUSTAINABILITY_ADDR, fee, bytes(""), Enum.Operation.Call), "call failure setup");
-            require(exec(cookieMonster, amount - fee, bytes(""), Enum.Operation.Call), "call failure setup");
-        } else {
-            require(
-                exec(
-                    cookieToken,
-                    0,
-                    abi.encodeWithSignature("transfer(address,uint256)", abi.encodePacked(SUSTAINABILITY_ADDR, fee)),
-                    Enum.Operation.Call
-                ),
-                "call failure setup"
-            );
-
-            require(
-                exec(
-                    cookieToken,
-                    0,
-                    abi.encodeWithSignature("transfer(address,uint256)", abi.encodePacked(cookieMonster, amount - fee)),
-                    Enum.Operation.Call
-                ),
-                "call failure setup"
-            );
-        }
-        emit GiveCookie(cookieMonster, amount, fee);
+        GiverZodiac.give(cookieMonster, amount, cookieToken, SUSTAINABILITY_FEE, SUSTAINABILITY_ADDR);
     }
 
     /**

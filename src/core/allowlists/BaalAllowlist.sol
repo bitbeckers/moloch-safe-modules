@@ -3,17 +3,14 @@ pragma solidity 0.8.19;
 
 import { IBaalToken } from "@daohaus/baal-contracts/contracts/interfaces/IBaalToken.sol";
 import { IBaal } from "@daohaus/baal-contracts/contracts/interfaces/IBaal.sol";
-import { CookieJar } from "./CookieJar.sol";
 
-contract BaalCookieJar is CookieJar {
+contract BaalAllowlist {
     address public dao;
     uint256 public threshold;
     bool public useShares;
     bool public useLoot;
 
-    function setUp(bytes memory _initializationParams) public override initializer {
-        super.setUp(_initializationParams);
-
+    function setUp(bytes memory _initializationParams) public {
         (,,,, address _dao, uint256 _threshold, bool _useShares, bool _useLoot) =
             abi.decode(_initializationParams, (address, uint256, uint256, address, address, uint256, bool, bool));
 
@@ -23,7 +20,7 @@ contract BaalCookieJar is CookieJar {
         useLoot = _useLoot;
     }
 
-    function isAllowList(address user) internal view override returns (bool) {
+    function isAllowList(address user) internal view returns (bool) {
         if (useShares && useLoot) {
             return IBaalToken(IBaal(dao).sharesToken()).balanceOf(user) >= threshold
                 || IBaalToken(IBaal(dao).lootToken()).balanceOf(user) >= threshold;
