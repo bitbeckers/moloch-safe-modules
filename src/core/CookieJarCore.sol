@@ -2,14 +2,12 @@
 pragma solidity 0.8.19;
 
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
-
-import { IPoster } from "@daohaus/baal-contracts/contracts/interfaces/IPoster.sol";
-
+import { ICookieJar } from "src/interfaces/ICookieJar.sol";
 import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { ICookieJarCore } from "src/interfaces/ICookieJarCore.sol";
+import { IPoster } from "@daohaus/baal-contracts/contracts/interfaces/IPoster.sol";
 
-abstract contract CookieJarCore is Initializable, OwnableUpgradeable, ICookieJarCore {
+abstract contract CookieJarCore is Initializable, OwnableUpgradeable, ICookieJar {
     /// @notice The tag used for posts related to this contract.
     string public constant POSTER_TAG = "CookieJar";
 
@@ -61,7 +59,7 @@ abstract contract CookieJarCore is Initializable, OwnableUpgradeable, ICookieJar
      * This function can only be called by the member themselves, and not on behalf of others.
      * @param _reason The reason provided by the member for making the claim. This will be posted publicly.
      */
-    function reachInJar(string calldata _reason) public {
+    function reachInJar(string calldata _reason) public virtual {
         require(isAllowList(msg.sender), "not a member");
         require(isValidClaimPeriod(msg.sender), "not a valid claim period");
 
@@ -79,7 +77,7 @@ abstract contract CookieJarCore is Initializable, OwnableUpgradeable, ICookieJar
      * @param cookieMonster The address to receive the cookie.
      * @param _reason The reason provided by the member for making the claim. This will be posted publicly.
      */
-    function reachInJar(address cookieMonster, string calldata _reason) public {
+    function reachInJar(address cookieMonster, string calldata _reason) public virtual {
         require(isAllowList(msg.sender), "not a member");
         require(isValidClaimPeriod(msg.sender), "not a valid claim period");
 
@@ -136,7 +134,9 @@ abstract contract CookieJarCore is Initializable, OwnableUpgradeable, ICookieJar
      * @dev Always returns true in this contract, but is expected to be overridden in a derived contract.
      * @return A boolean indicating whether the caller is a member.
      */
-    function isAllowList(address user) internal view virtual returns (bool) { }
+    function isAllowList(address user) internal view virtual returns (bool) {
+        return true;
+    }
 
     /**
      * @notice Checks if the claim period for the caller is valid.

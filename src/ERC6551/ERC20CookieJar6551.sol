@@ -6,12 +6,11 @@ import { ERC20Allowlist } from "src/core/allowlists/ERC20Allowlist.sol";
 
 contract ERC20CookieJar6551 is ERC20Allowlist, CookieJar6551 {
     function setUp(bytes memory _initializationParams) public override initializer {
-        super.setUp(_initializationParams);
-
-        ERC20Allowlist.setUp(_initializationParams);
+        CookieJar6551.setUp(_initializationParams);
+        ERC20Allowlist.setUpAllowlist(_initializationParams);
     }
 
-    function isAllowList() internal view override returns (bool) {
-        return ERC20Allowlist.isAllowList();
+    function isAllowList(address user) internal view override returns (bool) {
+        return ERC20Allowlist._isAllowList(user);
     }
 }

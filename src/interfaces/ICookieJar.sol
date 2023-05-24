@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.19;
 
-interface ICookieJarCore {
+interface ICookieJar {
     /// @dev Emitted when the contract is set up.
     /// @param initializationParams The parameters used for initialization.
     event Setup(bytes initializationParams);
@@ -33,7 +33,7 @@ interface ICookieJarCore {
      * @param _cookieToken The address of the token that is being distributed, zero address for native.
      */
     function setConfig(uint256 _periodLength, uint256 _cookieAmount, address _cookieToken) external;
-    
+
     /**
      * @notice Allows a member to make a claim and provides a reason for the claim.
      * @dev Checks if the caller is a member and if the claim period is valid. If the requirements are met,

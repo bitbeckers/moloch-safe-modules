@@ -6,13 +6,12 @@ import { MappedAllowlist } from "src/core/allowlists/MappedAllowlist.sol";
 
 contract ListCookieJar6551 is MappedAllowlist, CookieJar6551 {
     function setUp(bytes memory _initializationParams) public override initializer {
-        super.setUp(_initializationParams);
-
-        MappedAllowlist.setUp(_initializationParams);
+        CookieJar6551.setUp(_initializationParams);
+        MappedAllowlist.setUpAllowlist(_initializationParams);
     }
 
     function isAllowList(address user) internal view override returns (bool) {
-        return allowList[user];
+        return MappedAllowlist._isAllowList(user);
     }
 
     function setAllowList(address _address, bool _isAllowed) external onlyOwner {
@@ -20,6 +19,6 @@ contract ListCookieJar6551 is MappedAllowlist, CookieJar6551 {
     }
 
     function batchAllowList(address[] memory _addresses, bool[] memory _isAllowed) external onlyOwner {
-        MappedAllowlist.batchAllowList(_addresses, _isAllowed);
+        MappedAllowlist._batchAllowList(_addresses, _isAllowed);
     }
 }

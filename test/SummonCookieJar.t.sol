@@ -5,12 +5,12 @@ import { PRBTest } from "@prb/test/PRBTest.sol";
 import { console2 } from "forge-std/console2.sol";
 import { StdCheats } from "forge-std/StdCheats.sol";
 
-import { CookieJarFactory } from "src/CookieJarSafeModule/SummonCookieJar.sol";
-import { BaalCookieJar } from "src/CookieJarSafeModule/BaalCookieJar.sol";
-import { ERC20CookieJar } from "src/CookieJarSafeModule/ERC20CookieJar.sol";
-import { ERC721CookieJar } from "src/CookieJarSafeModule/ERC721CookieJar.sol";
-import { ListCookieJar } from "src/CookieJarSafeModule/ListCookieJar.sol";
-import { OpenCookieJar } from "src/CookieJarSafeModule/OpenCookieJar.sol";
+import { CookieJarFactory } from "src/factory/CookieJarFactory.sol";
+import { ZodiacBaalCookieJar } from "src/SafeModule/BaalCookieJar.sol";
+import { ZodiacERC20CookieJar } from "src/SafeModule/ERC20CookieJar.sol";
+import { ZodiacERC721CookieJar } from "src/SafeModule/ERC721CookieJar.sol";
+import { ZodiacListCookieJar } from "src/SafeModule/ListCookieJar.sol";
+import { ZodiacOpenCookieJar } from "src/SafeModule/OpenCookieJar.sol";
 
 contract SummonCookieJarTest is PRBTest, StdCheats {
     CookieJarFactory public cookieJarFactory = new CookieJarFactory();
@@ -28,7 +28,7 @@ contract SummonCookieJarTest is PRBTest, StdCheats {
     event SummonCookieJar(address cookieJar, string jarType, bytes initializer);
 
     function testSummonBaalCookieJar() public {
-        BaalCookieJar baalCookieJar = new BaalCookieJar();
+        ZodiacBaalCookieJar baalCookieJar = new ZodiacBaalCookieJar();
         bytes memory _initializer =
             abi.encode("safe", _periodLength, _cookieAmount, "cookieToken", "dao", _threshold, _useShares, _useLoot);
 
@@ -40,7 +40,7 @@ contract SummonCookieJarTest is PRBTest, StdCheats {
     }
 
     function testSummonERC20CookieJar() public {
-        ERC20CookieJar erc20CookieJar = new ERC20CookieJar();
+        ZodiacERC20CookieJar erc20CookieJar = new ZodiacERC20CookieJar();
         /*solhint-disable max-line-length*/
         bytes memory _initializer = abi.encode("safe", _periodLength, _cookieAmount, "cookieToken", "erc20", _threshold);
 
@@ -51,7 +51,7 @@ contract SummonCookieJarTest is PRBTest, StdCheats {
     }
 
     function testSummonERC721CookieJar() public {
-        ERC721CookieJar erc721CookieJar = new ERC721CookieJar();
+        ZodiacERC721CookieJar erc721CookieJar = new ZodiacERC721CookieJar();
         bytes memory _initializer = abi.encode("safe", _periodLength, _cookieAmount, "cookieToken", "erc721");
 
         // Only check is event emits, not the values
@@ -61,7 +61,7 @@ contract SummonCookieJarTest is PRBTest, StdCheats {
     }
 
     function testSummonListCookieJar() public {
-        ListCookieJar listCookieJar = new ListCookieJar();
+        ZodiacListCookieJar listCookieJar = new ZodiacListCookieJar();
         address[] memory _list = new address[](2);
 
         _list[0] = makeAddr("alice");
@@ -75,7 +75,7 @@ contract SummonCookieJarTest is PRBTest, StdCheats {
     }
 
     function testSummonOpenCookieJar() public {
-        OpenCookieJar openCookieJar = new OpenCookieJar();
+        ZodiacOpenCookieJar openCookieJar = new ZodiacOpenCookieJar();
         bytes memory _initializer = abi.encode("safe", _periodLength, _cookieAmount, "cookieToken");
 
         // Only check is event emits, not the values

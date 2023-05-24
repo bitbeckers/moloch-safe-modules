@@ -8,10 +8,10 @@ contract BaalCookieJar6551 is BaalAllowlist, CookieJar6551 {
     function setUp(bytes memory _initializationParams) public override initializer {
         super.setUp(_initializationParams);
 
-        BaalAllowlist.setUp(_initializationParams);
+        BaalAllowlist.setUpAllowlist(_initializationParams);
     }
 
-    function isAllowList() internal view override returns (bool) {
-        return BaalAllowlist.isAllowList();
+    function isAllowList(address user) internal view override returns (bool) {
+        return BaalAllowlist._isAllowList(user);
     }
 }

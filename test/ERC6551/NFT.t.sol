@@ -7,19 +7,18 @@ import { ERC20Mintable } from "test/utils/ERC20Mintable.sol";
 import { IPoster } from "@daohaus/baal-contracts/contracts/interfaces/IPoster.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
-import { AccountRegistry } from "src/CookieJarERC6551/erc6551/ERC6551Registry.sol";
-import { IRegistry } from "src/CookieJarERC6551/interfaces/IERC6551Registry.sol";
-import { AccountERC6551 } from "src/CookieJarERC6551/erc6551/ERC6551Module.sol";
+import { AccountRegistry } from "src/ERC6551/erc6551/ERC6551Registry.sol";
+import { IRegistry } from "src/interfaces/IERC6551Registry.sol";
+import { AccountERC6551 } from "src/ERC6551/erc6551/ERC6551Module.sol";
 import { MinimalReceiver } from "src/lib/MinimalReceiver.sol";
 import { MinimalProxyStore } from "src/lib/MinimalProxyStore.sol";
 
-import { CookieNFT } from "src/CookieJarERC6551/nft/CookieNFT.sol";
+import { CookieNFT } from "src/ERC6551/nft/CookieNFT.sol";
 import { CookieJarCore } from "src/core/CookieJarCore.sol";
 import { CookieJarFactory } from "src/factory/CookieJarFactory.sol";
-import { ImpCookieJar6551 } from "src/CookieJarERC6551/ImpCookieJar6551.sol";
+import { ListCookieJar6551 } from "src/ERC6551/ListCookieJar6551.sol";
 
 import "forge-std/console.sol";
-
 
 contract AccountRegistryTest is PRBTest {
     AccountERC6551 public implementation;
@@ -27,7 +26,7 @@ contract AccountRegistryTest is PRBTest {
 
     CookieJarCore public cookieJarImp;
     CookieJarFactory public cookieJarSummoner;
-    ImpCookieJar6551 public listCookieJarImp;
+    ListCookieJar6551 public listCookieJarImp;
     CookieNFT public tokenCollection;
 
     event AccountCreated(address account, address indexed tokenContract, uint256 indexed tokenId);
@@ -37,7 +36,7 @@ contract AccountRegistryTest is PRBTest {
         accountRegistry = new AccountRegistry(address(implementation));
 
         cookieJarSummoner = new CookieJarFactory();
-        listCookieJarImp = new ImpCookieJar6551();
+        listCookieJarImp = new ListCookieJar6551();
 
         tokenCollection = new CookieNFT(
             address(accountRegistry),
@@ -49,9 +48,7 @@ contract AccountRegistryTest is PRBTest {
         vm.mockCall(0x000000000000cd17345801aa8147b8D3950260FF, abi.encodeWithSelector(IPoster.post.selector), "");
     }
 
-    function testCookieMint() 
-    public 
-    returns (address account, address cookieJar, uint256 tokenId) {
+    function testCookieMint() public returns (address account, address cookieJar, uint256 tokenId) {
         address user1 = vm.addr(1);
         uint256 cookieAmount = 1e16;
         uint256 periodLength = 3600;
@@ -61,54 +58,57 @@ contract AccountRegistryTest is PRBTest {
         (account, cookieJar, tokenId) =
             tokenCollection.cookieMint(user1, periodLength, cookieAmount, cookieToken, allowList);
 
-  
-        (bool sent, ) = payable(account).call{value: 1 ether}("");
+        (bool sent,) = payable(account).call{ value: 1 ether }("");
         require(sent, "Failed to send Ether?");
 
         assertEq(tokenCollection.balanceOf(user1), 1);
-
-
     }
 
     function testCookieAddAccountToAllowListAsOwner() public {
         (address account, address cookieJar,) = testCookieMint();
         AccountERC6551 accountContract = AccountERC6551(payable(account));
-        ImpCookieJar6551 listCookieJarContract = ImpCookieJar6551(cookieJar);
-        
-        vm.prank(vm.addr(1));
-        accountContract.executeCall(cookieJar, 0, abi.encodeWithSelector(listCookieJarContract.setAllowList.selector, vm.addr(2), true));
-        
-        assertEq(listCookieJarContract.allowList(vm.addr(2)), true);
+        ListCookieJar6551 listCookieJarContract = ListCookieJar6551(cookieJar);
 
+        vm.prank(vm.addr(1));
+        accountContract.executeCall(
+            cookieJar, 0, abi.encodeWithSelector(listCookieJarContract.setAllowList.selector, vm.addr(2), true)
+        );
+
+        assertEq(listCookieJarContract.allowList(vm.addr(2)), true);
     }
 
     function testCookieRemoveAccountToAllowListAsOwner() public {
         (address account, address cookieJar,) = testCookieMint();
         AccountERC6551 accountContract = AccountERC6551(payable(account));
-        ImpCookieJar6551 listCookieJarContract = ImpCookieJar6551(cookieJar);
-        
-        vm.prank(vm.addr(1));
-        accountContract.executeCall(cookieJar, 0, abi.encodeWithSelector(listCookieJarContract.setAllowList.selector, vm.addr(2), true));
-        vm.prank(vm.addr(1));
-        accountContract.executeCall(cookieJar, 0, abi.encodeWithSelector(listCookieJarContract.setAllowList.selector, vm.addr(2), false));
-        assertEq(listCookieJarContract.allowList(vm.addr(2)), false);
+        ListCookieJar6551 listCookieJarContract = ListCookieJar6551(cookieJar);
 
+        vm.prank(vm.addr(1));
+        accountContract.executeCall(
+            cookieJar, 0, abi.encodeWithSelector(listCookieJarContract.setAllowList.selector, vm.addr(2), true)
+        );
+        vm.prank(vm.addr(1));
+        accountContract.executeCall(
+            cookieJar, 0, abi.encodeWithSelector(listCookieJarContract.setAllowList.selector, vm.addr(2), false)
+        );
+        assertEq(listCookieJarContract.allowList(vm.addr(2)), false);
     }
 
     function testCookieAllowListWithdraw() public {
         (address account, address cookieJar,) = testCookieMint();
         AccountERC6551 accountContract = AccountERC6551(payable(account));
-        ImpCookieJar6551 listCookieJarContract = ImpCookieJar6551(cookieJar);
+        ListCookieJar6551 listCookieJarContract = ListCookieJar6551(cookieJar);
 
         vm.prank(vm.addr(1));
-        accountContract.executeCall(cookieJar, 0, abi.encodeWithSelector(listCookieJarContract.setAllowList.selector, vm.addr(2), true));
+        accountContract.executeCall(
+            cookieJar, 0, abi.encodeWithSelector(listCookieJarContract.setAllowList.selector, vm.addr(2), true)
+        );
         assertEq(listCookieJarContract.allowList(vm.addr(2)), true);
 
         vm.prank(vm.addr(2));
-        ImpCookieJar6551(cookieJar).reachInJar(vm.addr(2), "test");
+        ListCookieJar6551(cookieJar).reachInJar(vm.addr(2), "test");
         console.logUint(account.balance);
         // new balance should be 1 eth minus cookie amount
-        assertEq(account.balance, 1e18-1e16);
+        assertEq(account.balance, 1e18 - 1e16);
     }
 
     function testCookieNftTransfer() public {
@@ -119,12 +119,12 @@ contract AccountRegistryTest is PRBTest {
         assertEq(tokenCollection.balanceOf(vm.addr(1)), 0);
 
         AccountERC6551 accountContract = AccountERC6551(payable(account));
-        ImpCookieJar6551 listCookieJarContract = ImpCookieJar6551(cookieJar);
-        
+        ListCookieJar6551 listCookieJarContract = ListCookieJar6551(cookieJar);
+
         vm.prank(vm.addr(1));
         vm.expectRevert(AccountERC6551.NotAuthorized.selector);
-        accountContract.executeCall(cookieJar, 0, abi.encodeWithSelector(listCookieJarContract.setAllowList.selector, vm.addr(2), true));
-
-
+        accountContract.executeCall(
+            cookieJar, 0, abi.encodeWithSelector(listCookieJarContract.setAllowList.selector, vm.addr(2), true)
+        );
     }
 }

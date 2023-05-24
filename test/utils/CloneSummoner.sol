@@ -2,32 +2,32 @@
 pragma solidity >=0.8.19 <0.9.0;
 
 import { Test, Vm } from "forge-std/Test.sol";
-import { CookieJarFactory } from "src/CookieJarSafeModule/SummonCookieJar.sol";
+import { CookieJarFactory } from "src/factory/CookieJarFactory.sol";
 import { BaalCookieJarHarnass } from "test/BaalCookieJar.t.sol";
-import { ERC20CookieJar } from "src/CookieJarSafeModule/ERC20CookieJar.sol";
-import { ERC721CookieJar } from "src/CookieJarSafeModule/ERC721CookieJar.sol";
-import { ListCookieJar } from "src/CookieJarSafeModule/ListCookieJar.sol";
-import { OpenCookieJar } from "src/CookieJarSafeModule/OpenCookieJar.sol";
+import { ZodiacERC20CookieJar } from "src/SafeModule/ERC20CookieJar.sol";
+import { ZodiacERC721CookieJar } from "src/SafeModule/ERC721CookieJar.sol";
+import { ZodiacListCookieJar } from "src/SafeModule/ListCookieJar.sol";
+import { ZodiacOpenCookieJar } from "src/SafeModule/OpenCookieJar.sol";
 
-contract ERC20CookieJarHarnass is ERC20CookieJar {
+contract ERC20CookieJarHarnass is ZodiacERC20CookieJar {
     function exposed_isAllowList(address user) external view returns (bool) {
         return isAllowList(user);
     }
 }
 
-contract ERC721CookieJarHarnass is ERC721CookieJar {
+contract ERC721CookieJarHarnass is ZodiacERC721CookieJar {
     function exposed_isAllowList(address user) external view returns (bool) {
         return isAllowList(user);
     }
 }
 
-contract ListCookieJarHarnass is ListCookieJar {
+contract ListCookieJarHarnass is ZodiacListCookieJar {
     function exposed_isAllowList(address user) external view returns (bool) {
         return isAllowList(user);
     }
 }
 
-contract OpenCookieJarHarnass is OpenCookieJar {
+contract OpenCookieJarHarnass is ZodiacOpenCookieJar {
     function exposed_isAllowList(address user) external view returns (bool) {
         return isAllowList(user);
     }

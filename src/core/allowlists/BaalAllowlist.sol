@@ -10,7 +10,7 @@ contract BaalAllowlist {
     bool public useShares;
     bool public useLoot;
 
-    function setUp(bytes memory _initializationParams) public {
+    function setUpAllowlist(bytes memory _initializationParams) public {
         (,,,, address _dao, uint256 _threshold, bool _useShares, bool _useLoot) =
             abi.decode(_initializationParams, (address, uint256, uint256, address, address, uint256, bool, bool));
 
@@ -20,7 +20,7 @@ contract BaalAllowlist {
         useLoot = _useLoot;
     }
 
-    function isAllowList(address user) internal view returns (bool) {
+    function _isAllowList(address user) internal view returns (bool) {
         if (useShares && useLoot) {
             return IBaalToken(IBaal(dao).sharesToken()).balanceOf(user) >= threshold
                 || IBaalToken(IBaal(dao).lootToken()).balanceOf(user) >= threshold;

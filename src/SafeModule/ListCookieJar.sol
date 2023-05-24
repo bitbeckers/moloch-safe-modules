@@ -7,11 +7,11 @@ import { ZodiacCookieJar } from "src/SafeModule/ZodiacCookieJar.sol";
 contract ZodiacListCookieJar is MappedAllowlist, ZodiacCookieJar {
     function setUp(bytes memory _initializationParams) public override initializer {
         ZodiacCookieJar.setUp(_initializationParams);
-        MappedAllowlist.setUp(_initializationParams);
+        MappedAllowlist.setUpAllowlist(_initializationParams);
     }
 
-    function isAllowList() internal view override returns (bool) {
-        return MappedAllowlist.isAllowList();
+    function isAllowList(address user) internal view override returns (bool) {
+        return MappedAllowlist._isAllowList(user);
     }
 
     function setAllowList(address _address, bool _isAllowed) external onlyOwner {
@@ -19,6 +19,6 @@ contract ZodiacListCookieJar is MappedAllowlist, ZodiacCookieJar {
     }
 
     function batchAllowList(address[] memory _addresses, bool[] memory _isAllowed) external onlyOwner {
-        MappedAllowlist.batchAllowList(_addresses, _isAllowed);
+        MappedAllowlist._batchAllowList(_addresses, _isAllowed);
     }
 }

@@ -7,10 +7,10 @@ import { ZodiacCookieJar } from "./ZodiacCookieJar.sol";
 contract ZodiacBaalCookieJar is BaalAllowlist, ZodiacCookieJar {
     function setUp(bytes memory _initializationParams) public override initializer {
         ZodiacCookieJar.setUp(_initializationParams);
-        BaalAllowlist.setUp(_initializationParams);
+        BaalAllowlist.setUpAllowlist(_initializationParams);
     }
 
     function isAllowList(address user) internal view override returns (bool) {
-        return BaalAllowlist.isAllowList(user);
+        return BaalAllowlist._isAllowList(user);
     }
 }

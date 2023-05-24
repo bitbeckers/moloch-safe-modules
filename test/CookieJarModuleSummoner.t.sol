@@ -7,15 +7,16 @@ import { StdCheats } from "forge-std/StdCheats.sol";
 
 import { ModuleProxyFactory } from "@gnosis.pm/zodiac/contracts/factory/ModuleProxyFactory.sol";
 
-import { CookieJarModuleSummoner } from "src/CookieJarSafeModule/CookieJarModuleSummoner.sol";
-import { BaalCookieJar } from "src/CookieJarSafeModule/BaalCookieJar.sol";
-import { ERC20CookieJar } from "src/CookieJarSafeModule/ERC20CookieJar.sol";
-import { ERC721CookieJar } from "src/CookieJarSafeModule/ERC721CookieJar.sol";
-import { ListCookieJar } from "src/CookieJarSafeModule/ListCookieJar.sol";
-import { OpenCookieJar } from "src/CookieJarSafeModule/OpenCookieJar.sol";
+import { CookieJarFactory } from "src/factory/CookieJarFactory.sol";
+import { ZodiacBaalCookieJar } from "src/SafeModule/BaalCookieJar.sol";
+import { ZodiacERC20CookieJar } from "src/SafeModule/ERC20CookieJar.sol";
+import { ZodiacERC721CookieJar } from "src/SafeModule/ERC721CookieJar.sol";
+import { ZodiacListCookieJar } from "src/SafeModule/ListCookieJar.sol";
+import { ZodiacOpenCookieJar } from "src/SafeModule/OpenCookieJar.sol";
+import { CookieJarFactory } from "src/factory/CookieJarFactory.sol";
 
 contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
-    CookieJarModuleSummoner public cookieJarSummoner = new CookieJarModuleSummoner();
+    CookieJarFactory public cookieJarSummoner = new CookieJarFactory();
     ModuleProxyFactory public moduleProxyFactory = new ModuleProxyFactory();
     address internal _safeTarget = makeAddr("safe");
     address internal _mockERC20 = makeAddr("erc20");
@@ -31,7 +32,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
     event SummonCookieJar(address cookieJarSingleton, string jarType, bytes initializer, uint256 saltNonce);
 
     function setUp() public virtual {
-        cookieJarSummoner.setAddrs(address(moduleProxyFactory));
+        // cookieJarSummoner.setAddrs(address(moduleProxyFactory));
     }
 
     function _calculateCreate2Address(
@@ -58,7 +59,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
     }
 
     function testSummonBaalCookieJar() public {
-        BaalCookieJar baalCookieJarSingleton = new BaalCookieJar();
+        ZodiacBaalCookieJar baalCookieJarSingleton = new ZodiacBaalCookieJar();
 
         bytes memory _initializerParams =
             abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken, _dao, _threshold, _useShares, _useLoot);
@@ -71,7 +72,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
 
         address cookieJar = _calculateCreate2Address(address(baalCookieJarSingleton), _initializer, saltNonce);
 
-        BaalCookieJar baalCookieJar = BaalCookieJar(cookieJar);
+        ZodiacBaalCookieJar baalCookieJar = ZodiacBaalCookieJar(cookieJar);
 
         assertEq(baalCookieJar.dao(), _dao);
         assertEq(baalCookieJar.threshold(), _threshold);
@@ -85,7 +86,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
     }
 
     function testSummonERC20CookieJar() public {
-        ERC20CookieJar erc20CookieJarSingleton = new ERC20CookieJar();
+        ZodiacERC20CookieJar erc20CookieJarSingleton = new ZodiacERC20CookieJar();
 
         bytes memory _initializerParams =
             abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken, _mockERC20, _threshold);
@@ -98,7 +99,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
 
         address cookieJar = _calculateCreate2Address(address(erc20CookieJarSingleton), _initializer, saltNonce);
 
-        ERC20CookieJar erc20CookieJar = ERC20CookieJar(cookieJar);
+        ZodiacERC20CookieJar erc20CookieJar = ZodiacERC20CookieJar(cookieJar);
 
         assertEq(erc20CookieJar.erc20Addr(), _mockERC20);
         assertEq(erc20CookieJar.threshold(), _threshold);
@@ -110,7 +111,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
     }
 
     function testSummonERC721CookieJar() public {
-        ERC721CookieJar erc721CookieJarSingleton = new ERC721CookieJar();
+        ZodiacERC721CookieJar erc721CookieJarSingleton = new ZodiacERC721CookieJar();
 
         bytes memory _initializerParams =
             abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken, _mockERC721);
@@ -123,7 +124,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
 
         address cookieJar = _calculateCreate2Address(address(erc721CookieJarSingleton), _initializer, saltNonce);
 
-        ERC721CookieJar erc721CookieJar = ERC721CookieJar(cookieJar);
+        ZodiacERC721CookieJar erc721CookieJar = ZodiacERC721CookieJar(cookieJar);
 
         assertEq(erc721CookieJar.erc721Addr(), _mockERC721);
         assertEq(erc721CookieJar.avatar(), _safeTarget);
@@ -134,7 +135,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
     }
 
     function testSummonListCookieJar() public {
-        ListCookieJar listCookieJarSingleton = new ListCookieJar();
+        ZodiacListCookieJar listCookieJarSingleton = new ZodiacListCookieJar();
 
         address[] memory _list = new address[](2);
         _list[0] = makeAddr("alice");
@@ -150,7 +151,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
 
         address cookieJar = _calculateCreate2Address(address(listCookieJarSingleton), _initializer, saltNonce);
 
-        ListCookieJar listCookieJar = ListCookieJar(cookieJar);
+        ZodiacListCookieJar listCookieJar = ZodiacListCookieJar(cookieJar);
 
         assertEq(listCookieJar.allowList(_list[0]), true);
         assertEq(listCookieJar.allowList(_list[1]), true);
@@ -163,7 +164,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
     }
 
     function testSummonOpenCookieJar() public {
-        OpenCookieJar openCookieJarSingleton = new OpenCookieJar();
+        ZodiacOpenCookieJar openCookieJarSingleton = new ZodiacOpenCookieJar();
 
         bytes memory _initializerParams = abi.encode(_safeTarget, _periodLength, _cookieAmount, _cookieToken);
         bytes memory _initializer = abi.encodeWithSignature("setUp(bytes)", _initializerParams);
@@ -175,7 +176,7 @@ contract CookieJarModuleSummonerTest is PRBTest, StdCheats {
 
         address cookieJar = _calculateCreate2Address(address(openCookieJarSingleton), _initializer, saltNonce);
 
-        OpenCookieJar openCookieJar = OpenCookieJar(cookieJar);
+        ZodiacOpenCookieJar openCookieJar = ZodiacOpenCookieJar(cookieJar);
 
         assertEq(openCookieJar.avatar(), _safeTarget);
         assertEq(openCookieJar.target(), _safeTarget);

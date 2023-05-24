@@ -8,7 +8,7 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { CookieJarCore } from "src/core/CookieJarCore.sol";
 
 contract CookieJarFactory is Ownable {
-    ModuleProxyFactory internal _moduleProxyFactory;
+    ModuleProxyFactory internal moduleProxyFactory;
 
     event SummonCookieJar(address cookieJar, string jarType, bytes initializer);
 
@@ -16,8 +16,8 @@ contract CookieJarFactory is Ownable {
     constructor() { }
 
     // must be called after deploy to set libraries
-    function setProxyFactory(address moduleProxyFactory) public onlyOwner {
-        _moduleProxyFactory = ModuleProxyFactory(moduleProxyFactory);
+    function setProxyFactory(address _moduleProxyFactory) public onlyOwner {
+        moduleProxyFactory = ModuleProxyFactory(_moduleProxyFactory);
     }
 
     function summonCookieJar(
@@ -40,6 +40,16 @@ contract CookieJarFactory is Ownable {
         return address(cookieJar);
     }
 
-    // todo: use the proxy factory to deploy jars
-    function summonCookieJarMod() public returns (address) { }
+    function summonCookieJar(
+        address _singleton,
+        bytes memory _initializer,
+        string memory _details,
+        uint256 _saltNonce
+    )
+        public
+    {
+        CookieJarCore _cookieJar = CookieJarCore(moduleProxyFactory.deployModule(_singleton, _initializer, _saltNonce));
+
+        emit SummonCookieJar(address(_cookieJar), _details, _initializer);
+    }
 }

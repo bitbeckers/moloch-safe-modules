@@ -10,7 +10,6 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-
 import "src/lib/MinimalReceiver.sol";
 import { IAccount } from "src/interfaces/IERC6551.sol";
 

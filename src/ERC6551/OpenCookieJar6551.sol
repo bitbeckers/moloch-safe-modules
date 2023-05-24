@@ -6,11 +6,5 @@ import { CookieJar6551 } from "./CookieJar6551.sol";
 contract OpenCookieJar6551 is CookieJar6551 {
     function setUp(bytes memory _initializationParams) public override initializer {
         super.setUp(_initializationParams);
-
-        BaalAllowlist.setUp(_initializationParams);
-    }
-
-    function isAllowList() internal view override returns (bool) {
-        return true;
     }
 }

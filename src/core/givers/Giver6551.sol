@@ -4,7 +4,9 @@ pragma solidity 0.8.19;
 import { AccountERC6551 } from "src/ERC6551/erc6551/ERC6551Module.sol";
 
 abstract contract Giver6551 {
-    address public target;
+    /// @notice target of erc6551.
+    AccountERC6551 public target;
+
     /// @notice The constant that represents percentage points for calculations.
     uint256 public constant PERC_POINTS = 1e6;
 

@@ -4,11 +4,7 @@ pragma solidity 0.8.19;
 import { ZodiacCookieJar } from "src/SafeModule/ZodiacCookieJar.sol";
 
 contract ZodiacOpenCookieJar is ZodiacCookieJar {
-    function setUp(bytes memory _initializationParams) public virtual override initializer {
+    function setUp(bytes memory _initializationParams) public override initializer {
         ZodiacCookieJar.setUp(_initializationParams);
-    }
-
-    function isAllowList(address user) internal pure override returns (bool) {
-        return true;
     }
 }

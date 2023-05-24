@@ -7,10 +7,10 @@ import { ERC721Allowlist } from "src/core/allowlists/ERC721Allowlist.sol";
 contract ZodiacERC721CookieJar is ERC721Allowlist, ZodiacCookieJar {
     function setUp(bytes memory _initializationParams) public override initializer {
         ZodiacCookieJar.setUp(_initializationParams);
-        ERC721Allowlist.setUp(_initializationParams);
+        ERC721Allowlist.setUpAllowlist(_initializationParams);
     }
 
     function isAllowList(address user) internal view override returns (bool) {
-        return ERC721Allowlist.isAllowList(user);
+        return ERC721Allowlist._isAllowList(user);
     }
 }
