@@ -1,0 +1,17 @@
+@daohaus/baal-contracts/contracts/=lib/Baal/contracts/
+@gnosis.pm/safe-contracts/=lib/safe-contracts/
+@gnosis.pm/zodiac/=lib/zodiac/
+@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/
+@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+@prb/test/=lib/prb-test/src/
+Baal/=lib/Baal/contracts/
+ds-test/=lib/forge-std/lib/ds-test/src/
+erc4626-tests/=lib/openzeppelin-contracts-upgradeable/lib/erc4626-tests/
+forge-std/=lib/forge-std/src/
+openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/
+openzeppelin-contracts/=lib/openzeppelin-contracts/
+openzeppelin/=lib/openzeppelin-contracts-upgradeable/contracts/
+prb-math/=lib/prb-math/src/
+prb-test/=lib/prb-test/src/
+safe-contracts/=lib/safe-contracts/
+src/=src/
