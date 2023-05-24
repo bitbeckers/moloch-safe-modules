@@ -33,7 +33,6 @@ import "forge-std/console.sol";
 
 contract AccountTest is PRBTest {
     AccountERC6551 public implementation;
-    AccountERC6551 public implementation;
     AccountRegistry public accountRegistry;
 
     MockERC721 public tokenCollection;
@@ -57,23 +56,19 @@ contract AccountTest is PRBTest {
         vm.deal(accountAddress, 1 ether);
 
         AccountERC6551 account = AccountERC6551(payable(accountAddress));
-        AccountERC6551 account = AccountERC6551(payable(accountAddress));
 
         // should fail if user2 tries to use account
         vm.prank(user2);
-        vm.expectRevert(AccountERC6551.NotAuthorized.selector);
         vm.expectRevert(AccountERC6551.NotAuthorized.selector);
         account.executeCall(payable(user2), 0.1 ether, "");
 
         // should fail if user2 tries to set executor
         vm.prank(user2);
         vm.expectRevert(AccountERC6551.NotAuthorized.selector);
-        vm.expectRevert(AccountERC6551.NotAuthorized.selector);
         account.setExecutor(vm.addr(1337));
 
         // should fail if user2 tries to lock account
         vm.prank(user2);
-        vm.expectRevert(AccountERC6551.NotAuthorized.selector);
         vm.expectRevert(AccountERC6551.NotAuthorized.selector);
         account.lock(364 days);
     }
@@ -90,11 +85,9 @@ contract AccountTest is PRBTest {
         vm.deal(accountAddress, 1 ether);
 
         AccountERC6551 account = AccountERC6551(payable(accountAddress));
-        AccountERC6551 account = AccountERC6551(payable(accountAddress));
 
         // should fail if user2 tries to use account
         vm.prank(user2);
-        vm.expectRevert(AccountERC6551.NotAuthorized.selector);
         vm.expectRevert(AccountERC6551.NotAuthorized.selector);
         account.executeCall(payable(user2), 0.1 ether, "");
 
@@ -117,7 +110,6 @@ contract AccountTest is PRBTest {
         address accountAddress = accountRegistry.createAccount(address(tokenCollection), tokenId);
 
         AccountERC6551 account = AccountERC6551(payable(accountAddress));
-        AccountERC6551 account = AccountERC6551(payable(accountAddress));
 
         bytes32 hash = keccak256("This is a signed message");
         (uint8 v1, bytes32 r1, bytes32 s1) = vm.sign(1, hash);
@@ -137,7 +129,6 @@ contract AccountTest is PRBTest {
 
         address accountAddress = accountRegistry.createAccount(address(tokenCollection), tokenId);
 
-        AccountERC6551 account = AccountERC6551(payable(accountAddress));
         AccountERC6551 account = AccountERC6551(payable(accountAddress));
 
         bytes32 hash = keccak256("This is a signed message");
@@ -161,11 +152,9 @@ contract AccountTest is PRBTest {
         vm.deal(accountAddress, 1 ether);
 
         AccountERC6551 account = AccountERC6551(payable(accountAddress));
-        AccountERC6551 account = AccountERC6551(payable(accountAddress));
 
         // cannot be locked for more than 365 days
         vm.prank(user1);
-        vm.expectRevert(AccountERC6551.ExceedsMaxLockTime.selector);
         vm.expectRevert(AccountERC6551.ExceedsMaxLockTime.selector);
         account.lock(block.timestamp + 366 days); // todo added block.timestamp + 366 days
 
@@ -179,12 +168,10 @@ contract AccountTest is PRBTest {
         // transaction should revert if account is locked
         vm.prank(user1);
         vm.expectRevert(AccountERC6551.AccountLocked.selector);
-        vm.expectRevert(AccountERC6551.AccountLocked.selector);
         account.executeCall(payable(user1), 1 ether, "");
 
         // fallback calls should revert if account is locked
         vm.prank(user1);
-        vm.expectRevert(AccountERC6551.AccountLocked.selector);
         vm.expectRevert(AccountERC6551.AccountLocked.selector);
         (bool success, bytes memory result) = accountAddress.call(abi.encodeWithSignature("customFunction()"));
 
@@ -195,12 +182,10 @@ contract AccountTest is PRBTest {
         // setExecutor calls should revert if account is locked
         vm.prank(user1);
         vm.expectRevert(AccountERC6551.AccountLocked.selector);
-        vm.expectRevert(AccountERC6551.AccountLocked.selector);
         account.setExecutor(vm.addr(1337));
 
         // lock calls should revert if account is locked
         vm.prank(user1);
-        vm.expectRevert(AccountERC6551.AccountLocked.selector);
         vm.expectRevert(AccountERC6551.AccountLocked.selector);
         account.lock(0);
 
@@ -237,7 +222,6 @@ contract AccountTest is PRBTest {
 
         vm.deal(accountAddress, 1 ether);
 
-        AccountERC6551 account = AccountERC6551(payable(accountAddress));
         AccountERC6551 account = AccountERC6551(payable(accountAddress));
 
         MockExecutor mockExecutor = new MockExecutor();
@@ -285,7 +269,6 @@ contract AccountTest is PRBTest {
         vm.deal(accountAddress, 1 ether);
 
         AccountERC6551 account = AccountERC6551(payable(accountAddress));
-        AccountERC6551 account = AccountERC6551(payable(accountAddress));
 
         assertEq(account.isAuthorized(user2), false);
 
@@ -311,7 +294,6 @@ contract AccountTest is PRBTest {
         vm.deal(accountAddress, 1 ether);
 
         AccountERC6551 account = AccountERC6551(payable(accountAddress));
-        AccountERC6551 account = AccountERC6551(payable(accountAddress));
 
         MockReverter mockReverter = new MockReverter();
 
@@ -323,7 +305,6 @@ contract AccountTest is PRBTest {
     function testAccountOwnerIsNullIfContextNotSet() public {
         address accountClone = Clones.clone(accountRegistry.implementation());
 
-        assertEq(AccountERC6551(payable(accountClone)).owner(), address(0));
         assertEq(AccountERC6551(payable(accountClone)).owner(), address(0));
     }
 
@@ -338,7 +319,6 @@ contract AccountTest is PRBTest {
 
         vm.deal(accountAddress, 1 ether);
 
-        AccountERC6551 account = AccountERC6551(payable(accountAddress));
         AccountERC6551 account = AccountERC6551(payable(accountAddress));
 
         assertEq(account.supportsInterface(type(IAccount).interfaceId), true);
