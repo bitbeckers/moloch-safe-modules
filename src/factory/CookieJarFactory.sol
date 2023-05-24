@@ -8,7 +8,6 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { CookieJarCore } from "src/core/CookieJarCore.sol";
 
 contract CookieJarFactory is Ownable {
-
     ModuleProxyFactory internal _moduleProxyFactory;
 
     event SummonCookieJar(address cookieJar, string jarType, bytes initializer);
@@ -38,16 +37,9 @@ contract CookieJarFactory is Ownable {
         emit SummonCookieJar(address(cookieJar), details, initializer);
 
         //TODO do we need to return the address?
-        return address(cookieJar)
+        return address(cookieJar);
     }
 
     // todo: use the proxy factory to deploy jars
-    function summonCookieJarMod(
-
-    )
-        public
-        returns (address)
-    {
-
-    }
+    function summonCookieJarMod() public returns (address) { }
 }
